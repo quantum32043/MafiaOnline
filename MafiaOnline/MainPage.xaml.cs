@@ -1,4 +1,8 @@
-﻿namespace MafiaOnline
+﻿using System.Net;
+using System.Net.Sockets;
+using MafiaOnline.Network;
+
+namespace MafiaOnline
 {
     public partial class MainPage : ContentPage
     {
@@ -11,14 +15,15 @@
 
         private void OnCounterClicked(object sender, EventArgs e)
         {
-            count+= 1;
+            Host host = new Host(9850);
+            host.Start();
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
+        }
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private void OnCounterClicked2(object sender, EventArgs e) 
+        {
+            Client client = new Client();
+            client.Join();
         }
     }
 

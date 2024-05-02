@@ -2,37 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net.Sockets;
 using System.Net;
+using Tmds.MDns;
+using System.Collections;
+using System.Diagnostics.Metrics;
+using System.Net.Http.Headers;
 
 namespace MafiaOnline.Network
 {
     internal class Client : User
     {
-        TcpClient? tcpClient;
-        public Client(IPAddress ip, int port) : base(ip, port) { }
-        public override void Create()
+        private TcpClient? tcpClient;
+        private int _serverPort = 9850;
+        private IPAddress _serverIP;
+
+        public Client()
         {
-            try
-            {
-                tcpClient = new TcpClient(this.IP.ToString(), this.Port);
-            }
-            catch
-            {
-            
-            }
+            tcpClient = new TcpClient();
         }
-        async public void Join(IPAddress ip, int port)
+
+        public void Join()
         {
-            try
-            {
-                await tcpClient!.ConnectAsync(ip, port);
-            }
-            catch
-            { 
-            
-            }
+            UdpClient udpClient = new UdpClient(11000);
+            udpClient.EnableBroadcast = true;
+
+            IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            byte[] receiveBytes = udpClient.Receive(ref receiveEndPoint);
+            string receivedData = Encoding.ASCII.GetString(receiveBytes);
+            udpClient.Close();
+            Console.WriteLine($"Received broadcast from {receiveEndPoint.ToString()} : {receivedData}\n");
+
+            _serverIP = IPAddress.Parse(receivedData);
+            tcpClient.Connect(_serverIP, _serverPort);
+            Console.WriteLine($"Подключение к серверу: {tcpClient.Connected}");
         }
     }
 }

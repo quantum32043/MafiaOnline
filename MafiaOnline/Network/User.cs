@@ -12,13 +12,8 @@ namespace MafiaOnline.Network
     {
         private IPAddress _ip;
         private int _port;
-        public IPAddress IP { get { return _ip; } }
-        public int Port { get { return _port; } }
-        protected User(IPAddress ip, int port)
-        {
-            _ip = ip;
-            _port = port;
-        }
-        public abstract void Create();
+        public IPAddress IP { get { return _ip; } protected set { _ip = value; } }
+        public int Port { get { return _port; } protected set { _port = value; } }
+        //public abstract void Create();
     }
 }

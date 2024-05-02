@@ -5,25 +5,67 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
+using System.Net.NetworkInformation;
 
 namespace MafiaOnline.Network
 {
     internal class Host : User
     {
-        private TcpListener? listener;
-        private Dictionary<Player, TcpClient> connections;
-        public Host(IPAddress ip, int port) : base(ip, port){ }
-        public override void Create()
+        public bool ServerOn;
+        public bool ClientsWaiting;
+
+        private TcpListener _listener;
+
+        private Dictionary<Player, TcpClient>? connections;
+
+        public Host(int port)
         {
-            listener = new TcpListener(this.IP, this.Port);
-            listener.Start();
+            ServerOn = false;
+            IP = Tools.GetLocalAddress();
+            Console.WriteLine(IP.ToString());
+            Port = port;
+            _listener = new TcpListener(this.IP, this.Port);
         }
-        public async void Connect(Player player)
+        public async void Start()
         {
-            while (true)
+            _listener.Start();
+            ServerOn = true;
+            UdpClient udpClient = new UdpClient();
+            udpClient.EnableBroadcast = true;
+            IPEndPoint broadcastEndPoint = new IPEndPoint(Tools.GetBroadcastAddress(IP.ToString(), Tools.GetLocalMask().ToString()), 11000);
+            try
             {
-                var client = await listener!.AcceptTcpClientAsync();
-                connections.Add(player, client);
+                ClientsWaiting = true;
+                Thread accceptClientsThread = new(AcceptClients);
+                accceptClientsThread.Start();
+                while (ClientsWaiting)
+                {
+                    // Преобразуем IP-адрес в байты
+                    byte[] sendBytes = Encoding.ASCII.GetBytes(IP.ToString());
+                    // Отправляем UDP-пакет
+                    udpClient.Send(sendBytes, sendBytes.Length, broadcastEndPoint);
+                    await Task.Delay(1000);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                udpClient.Close();
+            }
+
+        }
+
+        private void AcceptClients()
+        {
+            Console.WriteLine("Сервер запущен...");
+            while (ServerOn)
+            {
+                var tcpClient = _listener.AcceptTcpClient();
+                Console.WriteLine($"{tcpClient.Client.RemoteEndPoint}");
             }
         }
     }

@@ -26,10 +26,16 @@
 
             <Button
                 x:Name="CounterBtn"
-                Text="Click me" 
+                Text="Host" 
                 SemanticProperties.Hint="Counts the number of times you click"
                 Clicked="OnCounterClicked"
                 HorizontalOptions="Fill"/>
+            <Button
+                x:Name="CounterBtn2"
+                Text="Client" 
+                SemanticProperties.Hint="Counts the number of times you click"
+                Clicked="OnCounterClicked2"
+                HorizontalOptions="Fill"/>      
         </VerticalStackLayout>
     </ScrollView>
 
