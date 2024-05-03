@@ -4,21 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MafiaOnline
 {
     internal class Player
     {
-        Card? _card; 
-        string _name;
-        int _port;
-        int votesNumber;
-        int id;
+        //Card? card; 
+        public string Name { get; set; }
+        public int votesNumber;
+        public int id;
         public bool IsAlive { get; set; }
-        public Card? Card { get; set; }
+        //public Card? Card { get; set; }
         public Player(string name) 
         { 
-            _name = name;
+            Name = name;
             IsAlive = true;
         }
     }

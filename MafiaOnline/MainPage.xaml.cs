@@ -22,8 +22,9 @@ namespace MafiaOnline
 
         private void OnCounterClicked2(object sender, EventArgs e) 
         {
+            Player player = new Player("Alexander");
             Client client = new Client();
-            client.Join();
+            client.Join(player);
         }
     }
 
