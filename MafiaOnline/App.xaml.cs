@@ -1,4 +1,6 @@
-﻿namespace MafiaOnline
+﻿using Microsoft.Maui.ApplicationModel;
+
+namespace MafiaOnline
 {
     public partial class App : Application
     {
@@ -7,7 +9,20 @@
             InitializeComponent();
 
             MainPage = new AppShell();
+        }
 
+        protected override void OnStart()
+        {
+            // Проверьте, включена ли темная тема
+            if (Application.Current.UserAppTheme == AppTheme.Dark)
+            {
+                Application.Current.Resources = new DarkTheme();
+            }
+            else
+            {
+                Application.Current.Resources = new LightTheme();
+            }
         }
     }
+
 }
