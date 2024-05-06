@@ -17,18 +17,18 @@
 
     
     <StackLayout  Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
-        <Image Source="test.png" Aspect="Fill"/>
+        <Image Source="{AppThemeBinding Dark=dark_logo.png, Light=light_logo.png}" Aspect="Fill"/>
         <VerticalStackLayout Margin="0, 100, 0, 0">
             <Button x:Name="CreateButton" 
                     BackgroundColor="{DynamicResource PrimaryColor}" 
                     Text="Create" TextColor="{DynamicResource SecondaryTextColor}" 
                     Style="{StaticResource MenuButtonStyle}"
-                    Clicked="CreateHost"/>
+                    Clicked="OnLogin"/>
             <Button x:Name="ConnectButton" 
                     BackgroundColor="{DynamicResource SecondaryColor}" 
                     Text="Connect" TextColor="{DynamicResource SecondaryTextColor}" 
                     Margin="0, 30, 0, 0" Style="{StaticResource MenuButtonStyle}"
-                    Clicked="OnConnectToHost"/>
+                    Clicked="OnLogin"/>
         </VerticalStackLayout>
     </StackLayout>
 

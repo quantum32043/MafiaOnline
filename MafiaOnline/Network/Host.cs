@@ -22,7 +22,7 @@ namespace MafiaOnline.Network
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Dictionary<Player, TcpClient>? connections{ get; set; }
+        public Dictionary<Player, TcpClient>? connections;
 
         public Host(int port)
         {
@@ -37,9 +37,9 @@ namespace MafiaOnline.Network
         {
             _listener.Start();
             ServerOn = true;
-            UdpClient udpClient = new UdpClient();
+            UdpClient udpClient = new();
             udpClient.EnableBroadcast = true;
-            IPEndPoint broadcastEndPoint = new IPEndPoint(Tools.GetBroadcastAddress(IP.ToString(), Tools.GetLocalMask().ToString()), 11000);
+            IPEndPoint broadcastEndPoint = new(Tools.GetBroadcastAddress(IP.ToString(), Tools.GetLocalMask().ToString()), 11000);
             try
             {
                 ClientsWaiting = true;
@@ -86,7 +86,7 @@ namespace MafiaOnline.Network
 
                     Player? player = JsonConvert.DeserializeObject<Player>(json);
 
-                    if (connections!.ContainsKey(player))
+                    if (!connections!.ContainsKey(player))
                     {
                         connections.Add(player, tcpClient);
                         

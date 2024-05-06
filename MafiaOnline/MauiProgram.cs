@@ -16,7 +16,7 @@ namespace MafiaOnline
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             builder.Services.AddSingleton<IHostService, HostService>();
-
+            builder.Services.AddSingleton<IClientService, ClientService>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

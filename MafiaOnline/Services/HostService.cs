@@ -13,7 +13,6 @@ namespace MafiaOnline.Services
         public HostService() 
         {
             _host = new Host(9850);
-            _host.Start();
         }
 
         public Host GetHost()

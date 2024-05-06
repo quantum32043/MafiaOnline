@@ -20,16 +20,17 @@ namespace MafiaOnline.Network
             tcpClient = new TcpClient();
         }
 
-        public void Join(Player player)
+        public async Task Join(Player player)
         {
-            UdpClient udpClient = new UdpClient(11000);
+            UdpClient udpClient = new(11000);
             udpClient.EnableBroadcast = true;
 
-            IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, 0);
-            byte[] receiveBytes = udpClient.Receive(ref receiveEndPoint);
+            IPEndPoint receiveEndPoint = new(IPAddress.Any, 0);
+            UdpReceiveResult receiveResult = await udpClient.ReceiveAsync();
+            byte[] receiveBytes = receiveResult.Buffer;
             string receivedData = Encoding.UTF8.GetString(receiveBytes);
             udpClient.Close();
-            Console.WriteLine($"Received broadcast from {receiveEndPoint.ToString()} : {receivedData}\n");
+            Console.WriteLine($"Received broadcast from {receiveResult.RemoteEndPoint} : {receivedData}\n");
 
             _serverIP = IPAddress.Parse(receivedData);
             tcpClient.Connect(_serverIP, _serverPort);
@@ -41,11 +42,12 @@ namespace MafiaOnline.Network
                     string json = JsonConvert.SerializeObject(player);
                     byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
-                    stream.Write(jsonBytes, 0, jsonBytes.Length);
+                    await stream.WriteAsync(jsonBytes);
                 }
             }
             Console.WriteLine($"Подключение к серверу: {tcpClient.Connected}");
-            while (true) { Console.WriteLine(tcpClient.Connected); }
+            //while (true) { Console.WriteLine(tcpClient.Connected); }
         }
+
     }
 }

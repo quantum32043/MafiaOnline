@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MafiaOnline.ClientPage"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="MenuButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="60"/>
+                <Setter Property="WidthRequest" Value="150"/>
+                <Setter Property="HeightRequest" Value="60"/>
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <Frame CornerRadius="20"
+               BackgroundColor="{DynamicResource MenuColor}" 
+               HeightRequest="500" 
+               WidthRequest="380"
+               Margin="0, 20, 0, 0">
+            <ScrollView VerticalScrollBarVisibility="Always" 
+                        HorizontalOptions="FillAndExpand">
+                <StackLayout>
+                    <Label x:Name="ConnectionsLabel"
+                           FontSize="20">
+
+                    </Label>
+                </StackLayout>
+            </ScrollView>
+        </Frame>
+        <Grid VerticalOptions="EndAndExpand" 
+              HorizontalOptions="FillAndExpand"
+              Margin="0, 0, 0, 50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackButton" 
+                    Text="Back"
+                    TextColor="{DynamicResource SecondaryTextColor}"
+                    Grid.Column="0" 
+                    BackgroundColor="{DynamicResource SecondaryColor}"
+                    HorizontalOptions="Start"
+                    Style="{StaticResource MenuButtonStyle}"
+                    Margin="10, 0, 0, 0"/>
+        </Grid>
+    </StackLayout>
+</ContentPage>

@@ -7,6 +7,9 @@ public partial class HostPage : ContentPage
 {
     private IHostService _hostService;
     private Host _host;
+    private IClientService _clientService;
+    private Client _client;
+    private Player _player;
 
     public HostPage()
 	{
@@ -15,26 +18,35 @@ public partial class HostPage : ContentPage
 
     protected override async void OnAppearing()
     {
-        //base.OnAppearing();
-
-        await Task.Delay(1000); // Добавьте небольшую задержку
+        await Task.Delay(1000);
 
         _hostService = Handler!.MauiContext!.Services.GetService<IHostService>()!;
         _host = _hostService!.GetHost();
-        ViewPlayers();
+        _host.Start();
+        _clientService = Handler!.MauiContext!.Services.GetService<IClientService>()!;
+        _client = _clientService!.GetClient();
+        _player = _clientService!.GetPlayer();
+        await _client.Join(_player);
+        DisplayPlayers();
     }
+    //protected override async OnDisappearing()
+    //{
+    //    _host.ClientsWaiting = false;
+    //}
 
-    private async void ViewPlayers()
+
+    private async void DisplayPlayers()
     {
-        while (true)
+        while (_host.ClientsWaiting)
         {
-            List<Player> players = _host.connections!.Keys.ToList();
+            ConnectionsLabel.Text = "";
+            List<Player> players = [.._host.connections!.Keys.ToList()];
             foreach (Player player in players)
             {
-                //ConnectionsLabel.Text += player.Name + "\n";
+                ConnectionsLabel.Text += player.Name + "\n";
                 Console.WriteLine(player.Name);
             }
-            await Task.Delay(5000);
+            await Task.Delay(3000);
         }
     }
 }

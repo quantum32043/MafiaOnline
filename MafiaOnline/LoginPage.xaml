@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MafiaOnline.LoginPage"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="MenuButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="60"/>
+                <Setter Property="WidthRequest" Value="150"/>
+                <Setter Property="HeightRequest" Value="60"/>
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <VerticalStackLayout VerticalOptions="CenterAndExpand" WidthRequest="350">
+            <Label Text="Login" 
+                   FontSize="60"
+                   VerticalOptions="StartAndExpand"
+                   HorizontalOptions="FillAndExpand"/>
+            <Entry x:Name="LoginEntry"
+                   Placeholder="Enter your name"
+                   FontSize="20"/>
+        </VerticalStackLayout>
+        <Grid VerticalOptions="EndAndExpand" 
+              HorizontalOptions="FillAndExpand"
+              Margin="0, 0, 0, 50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackButton" 
+                    Text="Back"
+                    TextColor="{DynamicResource SecondaryTextColor}"
+                    Grid.Column="0" 
+                    BackgroundColor="{DynamicResource SecondaryColor}"
+                    HorizontalOptions="Start"
+                    Style="{StaticResource MenuButtonStyle}"
+                    Margin="10, 0, 0, 0"
+                    Clicked="OnBack"/>
+            <Button x:Name="NextButton" 
+                    Text=""
+                    TextColor="{DynamicResource SecondaryTextColor}"
+                    Grid.Column="1" 
+                    BackgroundColor="{DynamicResource PrimaryColor}" 
+                    HorizontalOptions="End" 
+                    Style="{StaticResource MenuButtonStyle}"
+                    Margin="0, 0, 10, 0"
+                    IsEnabled="False"/>
+            
+        </Grid>
+    </StackLayout>
+</ContentPage>

@@ -71,8 +71,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="ClientPage.xaml.cs">
+	    <DependentUpon>ClientPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="HostPage.xaml.cs">
 	    <DependentUpon>HostPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="LoginPage.xaml.cs">
+	    <DependentUpon>LoginPage.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Resources\Styles\DarkTheme.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
@@ -83,7 +89,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="ClientPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="HostPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Resources\Styles\Colors.xaml">
