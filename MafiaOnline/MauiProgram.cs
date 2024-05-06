@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MafiaOnline.Services;
+using Microsoft.Extensions.Logging;
 
 namespace MafiaOnline
 {
@@ -14,9 +15,10 @@ namespace MafiaOnline
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+            builder.Services.AddSingleton<IHostService, HostService>();
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

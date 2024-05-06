@@ -5,5 +5,6 @@
     <Color x:Key="PrimaryColor">Red</Color>
     <Color x:Key="SecondaryColor">White</Color>
     <Color x:Key="SecondaryTextColor">White</Color>
+    <Color x:Key="MenuColor">DarkGray</Color>
     <Color x:Key="TransparentColor">Transparent</Color>
 </ResourceDictionary>

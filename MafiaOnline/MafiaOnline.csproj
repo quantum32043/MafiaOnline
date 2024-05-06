@@ -71,6 +71,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="HostPage.xaml.cs">
+	    <DependentUpon>HostPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Resources\Styles\DarkTheme.xaml.cs">
 	    <DependentUpon>%(Filename)</DependentUpon>
 	  </Compile>
@@ -80,6 +83,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="HostPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Resources\Styles\Colors.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

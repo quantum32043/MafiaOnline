@@ -8,17 +8,21 @@ using System.Net;
 using System.Net.NetworkInformation;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace MafiaOnline.Network
 {
-    internal class Host : User
+    internal class Host : User, INotifyPropertyChanged
     {
         public bool ServerOn;
         public bool ClientsWaiting;
 
         private TcpListener _listener;
 
-        private Dictionary<Player, TcpClient>? connections;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public Dictionary<Player, TcpClient>? connections{ get; set; }
 
         public Host(int port)
         {
@@ -45,6 +49,7 @@ namespace MafiaOnline.Network
                 {
                     byte[] sendBytes = Encoding.UTF8.GetBytes(IP.ToString());
                     udpClient.Send(sendBytes, sendBytes.Length, broadcastEndPoint);
+                    Console.WriteLine("Broadcast wac sended!");
                     await Task.Delay(1000);
                 }
 
@@ -58,6 +63,11 @@ namespace MafiaOnline.Network
                 udpClient.Close();
             }
 
+        }
+
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
         private void AcceptClients()
@@ -79,6 +89,7 @@ namespace MafiaOnline.Network
                     if (connections!.ContainsKey(player))
                     {
                         connections.Add(player, tcpClient);
+                        
                     }
                     Console.WriteLine(connections.ToString());
                 }

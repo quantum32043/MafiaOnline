@@ -10,6 +10,7 @@
                 <Setter Property="WidthRequest" Value="300"/>
                 <Setter Property="HeightRequest" Value="60"/>
                 <Setter Property="Margin" Value="0, 0, 0, 0"/>
+                <Setter Property="FontSize" Value="20"/>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -18,8 +19,16 @@
     <StackLayout  Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
         <Image Source="test.png" Aspect="Fill"/>
         <VerticalStackLayout Margin="0, 100, 0, 0">
-            <Button x:Name="CreateButton" BackgroundColor="{DynamicResource PrimaryColor}" Text="Create" TextColor="{DynamicResource SecondaryTextColor}" FontSize="20" Style="{StaticResource MenuButtonStyle}"/>
-            <Button x:Name="ConnectButton" BackgroundColor="{DynamicResource SecondaryColor}" Text="Connect" TextColor="{DynamicResource SecondaryTextColor}" FontSize="20" Margin="0, 30, 0, 0" Style="{StaticResource MenuButtonStyle}"/>
+            <Button x:Name="CreateButton" 
+                    BackgroundColor="{DynamicResource PrimaryColor}" 
+                    Text="Create" TextColor="{DynamicResource SecondaryTextColor}" 
+                    Style="{StaticResource MenuButtonStyle}"
+                    Clicked="CreateHost"/>
+            <Button x:Name="ConnectButton" 
+                    BackgroundColor="{DynamicResource SecondaryColor}" 
+                    Text="Connect" TextColor="{DynamicResource SecondaryTextColor}" 
+                    Margin="0, 30, 0, 0" Style="{StaticResource MenuButtonStyle}"
+                    Clicked="OnConnectToHost"/>
         </VerticalStackLayout>
     </StackLayout>
 
