@@ -51,13 +51,19 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\Images\citizen.png" />
+	  <None Remove="Resources\Images\doctor.png" />
+	  <None Remove="Resources\Images\mafia.png" />
+	  <None Remove="Resources\Images\sheriff.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -90,6 +96,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="ClientPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="GamePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="HostPage.xaml">

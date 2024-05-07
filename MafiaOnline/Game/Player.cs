@@ -11,12 +11,11 @@ namespace MafiaOnline
 {
     internal class Player
     {
-        //Card? card; 
+        public Card? card; 
         public string Name { get; set; }
         public int votesNumber;
         public int id;
         public bool IsAlive { get; set; }
-        //public Card? Card { get; set; }
         public Player() 
         { 
             IsAlive = true;

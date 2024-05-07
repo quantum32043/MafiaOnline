@@ -10,7 +10,6 @@ namespace MafiaOnline.RoleCards
     {
         public Mafia()
         {
-            Role = "Mafia";
         }
 
         public void Shot() { }

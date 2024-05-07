@@ -15,7 +15,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    
+
     <StackLayout  Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
         <Image Source="{AppThemeBinding Dark=dark_logo.png, Light=light_logo.png}" Aspect="Fill"/>
         <VerticalStackLayout Margin="0, 100, 0, 0">
@@ -31,5 +31,4 @@
                     Clicked="OnLogin"/>
         </VerticalStackLayout>
     </StackLayout>
-
 </ContentPage>

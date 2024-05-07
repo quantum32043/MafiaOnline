@@ -11,7 +11,7 @@ namespace MafiaOnline.RoleCards
     {
         public Citizen()
         {
-            Role = "Citizen";
+            
         }
     }
 }

@@ -21,7 +21,7 @@ public partial class LoginPage : ContentPage
 			NextButton.Text = "Join";	
 			NextButton.Clicked += OnConnectToHost;
 		}
-
+        
 		LoginEntry.TextChanged += (s, e) =>
 		{
 			NextButton.IsEnabled = !string.IsNullOrEmpty(LoginEntry.Text);

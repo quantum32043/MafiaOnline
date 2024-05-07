@@ -10,7 +10,6 @@ namespace MafiaOnline.RoleCards
     {
         public Doctor() 
         {
-            Role = "Doctor";
         }
 
         public void Heal() { }

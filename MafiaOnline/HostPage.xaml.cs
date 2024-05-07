@@ -34,6 +34,12 @@ public partial class HostPage : ContentPage
     //    _host.ClientsWaiting = false;
     //}
 
+    private async void OnStart(object? sender, EventArgs e)
+    {
+        _host.ClientsWaiting = false;
+        _host.SendStartPackage();
+        await Navigation.PushModalAsync(new GamePage());
+    }
 
     private async void DisplayPlayers()
     {
@@ -46,7 +52,7 @@ public partial class HostPage : ContentPage
                 ConnectionsLabel.Text += player.Name + "\n";
                 Console.WriteLine(player.Name);
             }
-            await Task.Delay(3000);
+            await Task.Delay(500);
         }
     }
 }

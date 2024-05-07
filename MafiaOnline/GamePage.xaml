@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MafiaOnline.GamePage"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="MenuButtonStyle" TargetType="Button">
+                <Setter Property="CornerRadius" Value="60"/>
+                <Setter Property="HeightRequest" Value="60"/>
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout>
+        <VerticalStackLayout VerticalOptions="CenterAndExpand">
+            <Image x:Name="RoleCard"
+                       Source="mafia.png"
+                       Margin="0, 80, 0, 0"
+                       Aspect="AspectFill"/>
+        </VerticalStackLayout>
+        <Button Style="{DynamicResource MenuButtonStyle}"
+                    Text="RoleAction"
+                    BackgroundColor="{DynamicResource SecondaryColor}"
+                    TextColor="{DynamicResource SecondaryTextColor}"
+                    VerticalOptions="EndAndExpand"/>
+    </StackLayout>
+</ContentPage>

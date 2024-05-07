@@ -10,7 +10,6 @@ namespace MafiaOnline.RoleCards
     {
         public Sheriff()
         {
-            Role = "Sheriff";
         }
 
         public void Check() { }
