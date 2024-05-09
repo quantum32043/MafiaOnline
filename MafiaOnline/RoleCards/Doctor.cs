@@ -10,6 +10,7 @@ namespace MafiaOnline.RoleCards
     {
         public Doctor() 
         {
+            asset = "doctor.png";
         }
 
         public void Heal() { }

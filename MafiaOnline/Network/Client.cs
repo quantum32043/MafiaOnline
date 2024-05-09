@@ -15,6 +15,7 @@ namespace MafiaOnline.Network
         private int _serverPort = 9850;
         private IPAddress? _serverIP;
         public bool waitingServer;
+        public int id;
 
         public Client()
         {
@@ -85,7 +86,9 @@ namespace MafiaOnline.Network
                             else if (data.type == "startGame")
                             {
                                 waitingServer = false;
-                                Console.WriteLine("Geted startGame package!");
+                                id = data.id;
+                                Console.WriteLine($"Geted startGame package with Player id = {id}!");
+
                             }
                         }
                         catch (Exception ex)
@@ -100,6 +103,38 @@ namespace MafiaOnline.Network
             }
             else { Console.WriteLine("Disconnected!"); }
             return players;
+        }
+
+        public void ReceiveGameInfo(ref Game game)
+        {
+            try
+            {
+                NetworkStream stream = tcpClient.GetStream();
+                byte[] buffer = new byte[tcpClient.ReceiveBufferSize];
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                if (bytesRead > 0)
+                {
+                    string? json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    try
+                    {
+                        dynamic data = JsonConvert.DeserializeObject(json);
+                        Console.WriteLine(data.ToString());
+                        if (data.type == "gameInfo")
+                        {
+                            string gameJson = JsonConvert.SerializeObject(data.info);
+                            game = JsonConvert.DeserializeObject<Game>(gameJson);
+                            Console.WriteLine("Geted game info!");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при десериализации JSON: " + ex.Message);
+                        Console.WriteLine("JSON: " + json);
+                    }
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("2: " + ex.Message); }
         }
     }
 

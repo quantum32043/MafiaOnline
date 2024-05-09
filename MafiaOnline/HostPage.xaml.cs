@@ -38,7 +38,7 @@ public partial class HostPage : ContentPage
     {
         _host.ClientsWaiting = false;
         _host.SendStartPackage();
-        await Navigation.PushModalAsync(new GamePage());
+        await Navigation.PushModalAsync(new GamePage(new HostStartGameStrategy(), true));
     }
 
     private async void DisplayPlayers()

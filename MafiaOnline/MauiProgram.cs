@@ -17,6 +17,7 @@ namespace MafiaOnline
                 });
             builder.Services.AddSingleton<IHostService, HostService>();
             builder.Services.AddSingleton<IClientService, ClientService>();
+            builder.Services.AddSingleton<IGameService, GameService>();
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

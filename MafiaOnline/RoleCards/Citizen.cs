@@ -11,7 +11,7 @@ namespace MafiaOnline.RoleCards
     {
         public Citizen()
         {
-            
+            asset = "citizen.png";
         }
     }
 }

@@ -10,6 +10,7 @@ namespace MafiaOnline.RoleCards
     {
         public Mafia()
         {
+            asset = "mafia.png";
         }
 
         public void Shot() { }

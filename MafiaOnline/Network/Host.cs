@@ -9,14 +9,12 @@ using Newtonsoft.Json;
 
 namespace MafiaOnline.Network
 {
-    internal class Host : User//, INotifyPropertyChanged
+    internal class Host : User
     {
         public bool ServerOn;
         public bool ClientsWaiting;
 
-        private TcpListener _listener;
-
-        //public event PropertyChangedEventHandler PropertyChanged;
+        private readonly TcpListener _listener;
 
         public Dictionary<Player, TcpClient>? connections;
 
@@ -29,7 +27,7 @@ namespace MafiaOnline.Network
             _listener = new TcpListener(this.IP, this.Port);
             connections = new Dictionary<Player, TcpClient>();
         }
-        public async void Start()
+        public void Start()
         {
             _listener.Start();
             ServerOn = true;
@@ -42,11 +40,7 @@ namespace MafiaOnline.Network
             playerDistributionThread.Start();
         }
 
-        //public void OnPropertyChanged([CallerMemberName] string prop = "")
-        //{
-        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        //}
-
+        //Отправка всем клиентам списка подключенных игроков
         public async void SendPlayers()
         {
             //CheckConnections();
@@ -81,7 +75,31 @@ namespace MafiaOnline.Network
             }
         }
 
+        //Отправка пакеты, уведомляющиего о начале игры
         public async void SendStartPackage()
+        {
+            try
+            {
+                List<TcpClient> currentConnections = connections!.Values.ToList();
+                int i = 0;
+                foreach (TcpClient client in currentConnections)
+                {
+                    if (client.Connected)
+                    {
+                        NetworkStream stream = client.GetStream();
+                        {
+                            string json = JsonConvert.SerializeObject(new { type = "startGame", id=i++ });
+                            byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+
+                            await stream.WriteAsync(jsonBytes);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+        }
+
+        public async void SendGameInfo(Game game) 
         {
             try
             {
@@ -92,7 +110,7 @@ namespace MafiaOnline.Network
                     {
                         NetworkStream stream = client.GetStream();
                         {
-                            string json = JsonConvert.SerializeObject(new { type = "startGame" });
+                            string json = JsonConvert.SerializeObject(new { type = "gameInfo", info = game });
                             byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
                             await stream.WriteAsync(jsonBytes);
@@ -134,8 +152,9 @@ namespace MafiaOnline.Network
             }
         }
 
-        private async void AcceptClients()
+        private void AcceptClients()
         {
+            int id = 0;
             Console.WriteLine("Сервер запущен...");
             while (ClientsWaiting)
             {
@@ -153,10 +172,11 @@ namespace MafiaOnline.Network
                         Player? player = JsonConvert.DeserializeObject<Player>(json);
 
 
-                        if (!connections!.ContainsKey(player))
+                        if (!connections!.ContainsKey(player!))
                         {
-                            connections.Add(player, tcpClient);
-
+                            player.id = id;
+                            connections.Add(player!, tcpClient);
+                            id++;
                         }
 
                         Console.WriteLine(connections.ToString());

@@ -10,6 +10,7 @@ namespace MafiaOnline.RoleCards
     {
         public Sheriff()
         {
+            asset = "sheriff.png";
         }
 
         public void Check() { }

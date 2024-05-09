@@ -1,25 +1,34 @@
 ﻿using MafiaOnline.RoleCards;
+using Newtonsoft.Json;
 
-namespace MafiaOnline.Game
+namespace MafiaOnline
 {
     internal class Game
     {
-        private List<Player> _players;
-        private List<Card> _cards;
-        private GamePhase _currentPhase;
-        private int _dayNumber;
-        private int _mafiaCount;
-        private int _peacefulCount;
+        public List<Player> players { get; set; }
+        [JsonProperty]
+        public List<Card> _cards { get; set; }
+        [JsonProperty]
+        public GamePhase _currentPhase { get;  set; }
+        [JsonProperty]
+        public int _dayNumber { get;  set; }
+        [JsonProperty]
+        public int _mafiaCount { get;  set; }
+        [JsonProperty]
+        public int _peacefulCount { get;  set; }
 
-        public Game(List<Player> players)
+        public Game()
         {
-            _players = players;
             _cards = new List<Card>();
             _currentPhase = GamePhase.Day; // Игра начинается с дневной фазы
             _dayNumber = 1;
-            _mafiaCount = (int)Math.Round(_players.Count / 3.5);
-            _peacefulCount = _players.Count - _mafiaCount;
-            int citizenCount = _players.Count - _mafiaCount - 2;
+        }
+
+        public void Start()
+        {
+            _mafiaCount = (int)Math.Round(players.Count / 3.5);
+            _peacefulCount = players.Count - _mafiaCount;
+            int citizenCount = players.Count - _mafiaCount - 2;
 
             for (int i = 0; i < _mafiaCount; i++)
             {
@@ -35,10 +44,6 @@ namespace MafiaOnline.Game
             _cards.Add(new Sheriff());
 
             AssignRoles();
-        }
-
-        public void Start()
-        {
             while (!IsGameOver())
             {
                 switch (_currentPhase)
@@ -53,14 +58,14 @@ namespace MafiaOnline.Game
             }
         }
 
-        private void AssignRoles()
+        public void AssignRoles()
         {
             Random random = new Random();
             _cards = _cards.OrderBy(x => random.Next()).ToList();
 
-            for (int i = 0; i < _players.Count; i++)
+            for (int i = 0; i < players.Count; i++)
             {
-                _players[i].card = _cards[i];
+                players[i].card = _cards[i];
             }
         }
 
@@ -85,7 +90,7 @@ namespace MafiaOnline.Game
 
         private void IndividualDiscusion()
         {
-            foreach (var player in _players) 
+            foreach (var player in players) 
             {
             
             }

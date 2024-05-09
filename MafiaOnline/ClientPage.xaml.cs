@@ -29,13 +29,13 @@ public partial class ClientPage : ContentPage
         DisplayPlayers();
     }
 
-    protected async override void OnDisappearing()
-    {
-        base.OnDisappearing();
-        _client.Disconnect();
-        clientConnected = false;
-        await Navigation.PopToRootAsync();
-    }
+    //protected async override void OnDisappearing()
+    //{
+    //    base.OnDisappearing();
+    //    _client.Disconnect();
+    //    clientConnected = false;
+    //    await Navigation.PopToRootAsync();
+    //}
 
     private async void DisplayPlayers()
     {
@@ -58,7 +58,8 @@ public partial class ClientPage : ContentPage
         if (clientConnected)
         {
             Console.WriteLine("Start game!");
-            await Navigation.PushModalAsync(new GamePage());
+            _player.id = _client.id;
+            await Navigation.PushModalAsync(new GamePage(new ClientStartGameStrategy(), false));
         }
     }
 }

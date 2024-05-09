@@ -15,7 +15,6 @@
     <StackLayout>
         <VerticalStackLayout VerticalOptions="CenterAndExpand">
             <Image x:Name="RoleCard"
-                       Source="mafia.png"
                        Margin="0, 80, 0, 0"
                        Aspect="AspectFill"/>
         </VerticalStackLayout>

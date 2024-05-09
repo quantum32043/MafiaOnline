@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MafiaOnline.RoleCards
+namespace MafiaOnline.Services
 {
-    internal class Card
+    internal interface IGameService
     {
-        public string? asset;
+        Game GetGame();
     }
 }
