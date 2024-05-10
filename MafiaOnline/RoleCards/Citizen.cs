@@ -11,6 +11,14 @@ namespace MafiaOnline.RoleCards
     {
         public Citizen()
         {
+            //if (Application.Current.RequestedTheme == AppTheme.Dark)
+            //{
+            //    asset = "dark_citizen.png";
+            //}
+            //else if (Application.Current.RequestedTheme == AppTheme.Light)
+            //{
+            //    asset = "citizen.png";
+            //}
             asset = "citizen.png";
         }
     }

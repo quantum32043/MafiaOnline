@@ -18,7 +18,7 @@ public partial class HostPage : ContentPage
 
     protected override async void OnAppearing()
     {
-        await Task.Delay(1000);
+        await Task.Delay(500);
 
         _hostService = Handler!.MauiContext!.Services.GetService<IHostService>()!;
         _host = _hostService!.GetHost();
@@ -38,7 +38,7 @@ public partial class HostPage : ContentPage
     {
         _host.ClientsWaiting = false;
         _host.SendStartPackage();
-        await Navigation.PushModalAsync(new GamePage(new HostStartGameStrategy(), true));
+        await Navigation.PushModalAsync(new GamePage(true));
     }
 
     private async void DisplayPlayers()

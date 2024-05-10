@@ -105,8 +105,9 @@ namespace MafiaOnline.Network
             return players;
         }
 
-        public void ReceiveGameInfo(ref Game game)
+        public Game ReceiveGameInfo()
         {
+            Game game = new();
             try
             {
                 NetworkStream stream = tcpClient.GetStream();
@@ -135,6 +136,7 @@ namespace MafiaOnline.Network
                 }
             }
             catch (Exception ex) { Console.WriteLine("2: " + ex.Message); }
+            return game;
         }
     }
 

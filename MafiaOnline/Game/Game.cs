@@ -43,7 +43,6 @@ namespace MafiaOnline
             _cards.Add(new Doctor());
             _cards.Add(new Sheriff());
 
-            AssignRoles();
             while (!IsGameOver())
             {
                 switch (_currentPhase)

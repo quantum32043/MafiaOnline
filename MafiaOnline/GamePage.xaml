@@ -12,16 +12,67 @@
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <StackLayout>
-        <VerticalStackLayout VerticalOptions="CenterAndExpand">
+    <AbsoluteLayout>
+        <VerticalStackLayout x:Name="ViewLayout"
+                             VerticalOptions="Fill" 
+                             HorizontalOptions="Fill" 
+                             WidthRequest="152"
+                             HeightRequest="214"
+                             ZIndex="1">
             <Image x:Name="RoleCard"
-                       Margin="0, 80, 0, 0"
-                       Aspect="AspectFill"/>
+                   ZIndex="1"
+                   AnchorX="0"
+                   AnchorY="0"
+                   Margin="10, 10, 0, 0"
+                   WidthRequest="142"
+                   HeightRequest="204"
+                   HorizontalOptions="StartAndExpand"
+                   VerticalOptions="StartAndExpand"/>
         </VerticalStackLayout>
-        <Button Style="{DynamicResource MenuButtonStyle}"
-                    Text="RoleAction"
-                    BackgroundColor="{DynamicResource SecondaryColor}"
-                    TextColor="{DynamicResource SecondaryTextColor}"
-                    VerticalOptions="EndAndExpand"/>
-    </StackLayout>
+        <ScrollView HorizontalOptions="CenterAndExpand"
+                    VerticalOptions="CenterAndExpand"
+                    HeightRequest="360"
+                    WidthRequest="383"
+                    Margin="5, 216, 5, 0">
+            <Frame VerticalOptions="FillAndExpand" 
+                   HorizontalOptions="FillAndExpand"
+                   BackgroundColor="{DynamicResource SecondaryColor}"
+                   CornerRadius="10"
+                   Padding="5, 0, 5, 0">
+                <VerticalStackLayout x:Name="PlayerList">
+                    <!--<Button BackgroundColor="Red"
+                            VerticalOptions="StartAndExpand"
+                            HorizontalOptions="FillAndExpand"
+                            ZIndex="0"
+                            HeightRequest="40"
+                            CornerRadius="10"
+                            Margin="0, 5, 0, 0"/>-->
+                    <!--<Frame HeightRequest="40"
+                           Margin="0, 5, 0, 0"
+                           Padding="0, 0, 0, 0"
+                           CornerRadius="10">
+                        <Label x:Name="playerLabel1" 
+                               Text="Игрок 1"
+                               HorizontalTextAlignment="Center"
+                               VerticalTextAlignment="Center"
+                               FontSize="22"
+                               HeightRequest="40">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLabelTapped"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Frame>-->
+                </VerticalStackLayout>
+            </Frame>
+        </ScrollView>
+        <Button x:Name="RoleAction"
+                        Clicked="OnButtonClicked"
+                        Margin="5, 715, 5, 0"
+                        WidthRequest="383"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        ZIndex="0"
+                        Text="RoleAction"
+                        BackgroundColor="{DynamicResource SecondaryColor}"
+                        TextColor="{DynamicResource SecondaryTextColor}"/>
+    </AbsoluteLayout>
 </ContentPage>

@@ -104,6 +104,7 @@ namespace MafiaOnline.Network
             try
             {
                 List<TcpClient> currentConnections = connections!.Values.ToList();
+                Console.WriteLine(JsonConvert.SerializeObject(game));
                 foreach (TcpClient client in currentConnections)
                 {
                     if (client.Connected)

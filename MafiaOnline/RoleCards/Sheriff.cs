@@ -10,6 +10,14 @@ namespace MafiaOnline.RoleCards
     {
         public Sheriff()
         {
+            //if (Application.Current.RequestedTheme == AppTheme.Dark)
+            //{
+            //    asset = "dark_sheriff.png";
+            //}
+            //else if (Application.Current.RequestedTheme == AppTheme.Light)
+            //{
+            //    asset = "sheriff.png";
+            //}
             asset = "sheriff.png";
         }
 

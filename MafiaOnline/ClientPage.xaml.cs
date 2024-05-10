@@ -20,7 +20,7 @@ public partial class ClientPage : ContentPage
         base.OnAppearing();
         clientConnected = true;
 
-        await Task.Delay(1000);
+        await Task.Delay(500);
 
         _clientService = Handler!.MauiContext!.Services.GetService<IClientService>()!;
         _client = _clientService!.GetClient();
@@ -59,7 +59,7 @@ public partial class ClientPage : ContentPage
         {
             Console.WriteLine("Start game!");
             _player.id = _client.id;
-            await Navigation.PushModalAsync(new GamePage(new ClientStartGameStrategy(), false));
+            await Navigation.PushModalAsync(new GamePage(false));
         }
     }
 }

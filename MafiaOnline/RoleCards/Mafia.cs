@@ -10,6 +10,14 @@ namespace MafiaOnline.RoleCards
     {
         public Mafia()
         {
+            //if (Application.Current.RequestedTheme == AppTheme.Dark)
+            //{
+            //    asset = "dark_mafia.png";
+            //}
+            //else if (Application.Current.RequestedTheme == AppTheme.Light)
+            //{
+            //    asset = "mafia.png";
+            //}
             asset = "mafia.png";
         }
 
