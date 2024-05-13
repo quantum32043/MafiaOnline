@@ -20,6 +20,7 @@ namespace MafiaOnline.RoleCards
             //    asset = "citizen.png";
             //}
             asset = "citizen.png";
+            RoleNumber = -1;
         }
     }
 }

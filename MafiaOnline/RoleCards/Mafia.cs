@@ -19,6 +19,7 @@ namespace MafiaOnline.RoleCards
             //    asset = "mafia.png";
             //}
             asset = "mafia.png";
+            RoleNumber = 1;
         }
 
         public void Shot() { }

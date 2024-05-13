@@ -65,7 +65,18 @@
                 </VerticalStackLayout>
             </Frame>
         </ScrollView>
-        <Button x:Name="RoleAction"
+
+        <Button x:Name="VoteButton"
+                        Clicked="OnButtonClicked"
+                        Margin="5, 640, 5, 0"
+                        WidthRequest="383"
+                        Style="{DynamicResource MenuButtonStyle}"
+                        ZIndex="0"
+                        Text="Vote"
+                        BackgroundColor="{DynamicResource SecondaryColor}"
+                        TextColor="{DynamicResource SecondaryTextColor}"/>
+        
+        <Button x:Name="RoleButton"
                         Clicked="OnButtonClicked"
                         Margin="5, 715, 5, 0"
                         WidthRequest="383"

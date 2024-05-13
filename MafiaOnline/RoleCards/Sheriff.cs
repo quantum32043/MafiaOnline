@@ -19,6 +19,7 @@ namespace MafiaOnline.RoleCards
             //    asset = "sheriff.png";
             //}
             asset = "sheriff.png";
+            RoleNumber = 2;
         }
 
         public void Check() { }

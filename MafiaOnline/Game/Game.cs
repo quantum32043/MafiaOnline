@@ -9,19 +9,24 @@ namespace MafiaOnline
         [JsonProperty]
         public List<Card> _cards { get; set; }
         [JsonProperty]
-        public GamePhase _currentPhase { get;  set; }
+        public GameDayTime _currentDayTime { get; set; }
         [JsonProperty]
-        public int _dayNumber { get;  set; }
+        public GamePhase _currentGamePhase { get; set; }
         [JsonProperty]
-        public int _mafiaCount { get;  set; }
+        public bool GameOver { get; set; }
         [JsonProperty]
-        public int _peacefulCount { get;  set; }
+        public int _dayNumber { get; set; }
+        [JsonProperty]
+        public int _mafiaCount { get; set; }
+        [JsonProperty]
+        public int _peacefulCount { get; set; }
 
         public Game()
         {
             _cards = new List<Card>();
-            _currentPhase = GamePhase.Day; // Игра начинается с дневной фазы
+            _currentDayTime = GameDayTime.Day; // Игра начинается с дневной фазы
             _dayNumber = 1;
+            GameOver = false;
         }
 
         public void Start()
@@ -45,12 +50,12 @@ namespace MafiaOnline
 
             while (!IsGameOver())
             {
-                switch (_currentPhase)
+                switch (_currentDayTime)
                 {
-                    case GamePhase.Day:
+                    case GameDayTime.Day:
                         DayPhase();
                         break;
-                    case GamePhase.Night:
+                    case GameDayTime.Night:
                         NightPhase();
                         break;
                 }
@@ -70,56 +75,116 @@ namespace MafiaOnline
 
         private void DayPhase()
         {
-            // Логика дневной фазы: обсуждение, голосование и т.д.
-            // ...
-            TransitionToPhase(GamePhase.Night);
+            if (_dayNumber != 1)
+            {
+                GeneralDiscussion();
+                IndividualDiscussion();
+                Voting();
+
+            }
+            else
+            {
+                //Таймер на 10 секунд для ознакомления с картами
+            }
+            TransitionToPhase(GameDayTime.Night);
         }
 
         private void NightPhase()
         {
-            // Логика ночной фазы: отыгрышь ролей
-            // ...
-            TransitionToPhase(GamePhase.Day);
+            if (_dayNumber != 1)
+            {
+                MafiaRoleplaying();
+                SheriffRoleplaying();
+                DoctorRoleplying();
+            }
+            else
+            {
+                MafiaAcquaintance();
+            }
+            TransitionToPhase(GameDayTime.Day);
+        }
+
+        private void IndividualDiscussion()
+        {
+            _currentGamePhase = GamePhase.IndividualDiscussionPhase;
+            foreach (var player in players)
+            {
+
+            }
         }
 
         private void GeneralDiscussion()
         {
+            _currentGamePhase = GamePhase.GeneralDiscussionPhase;
 
-        }
-
-        private void IndividualDiscusion()
-        {
-            foreach (var player in players) 
-            {
-            
-            }
         }
 
         private void Voting()
         {
-             
+            _currentGamePhase = GamePhase.VotingPhase;
+
         }
 
-        private void TransitionToPhase(GamePhase nextPhase)
+        private void MafiaAcquaintance()
+        {
+            _currentGamePhase = GamePhase.MafiaAcquaintancePhase;
+        }
+
+
+        private void MafiaRoleplaying()
+        {
+            _currentGamePhase = GamePhase.MafiaPhase;
+        }
+
+        private void SheriffRoleplaying()
+        {
+            _currentGamePhase= GamePhase.SheriffPhase;
+        }
+
+        private void DoctorRoleplying()
+        {
+            _currentGamePhase = GamePhase.DoctorPhase;
+        }
+
+
+        private void TransitionToPhase(GameDayTime nextPhase)
         {
             // Переход между фазами
-            _currentPhase = nextPhase;
+            _currentDayTime = nextPhase;
         }
 
         private bool IsGameOver()
         {
-            bool GameOver;
-            if (_mafiaCount > _peacefulCount) GameOver = false;
-            else GameOver = true;
+            if (_mafiaCount > _peacefulCount)
+            {
+                GameOver = false;
+            }
+            else
+            {
+                GameOver = true;
+            }
             return GameOver;
         }
     }
 
-    public enum GamePhase
+    public enum GameDayTime
     {
         Day,
         Night
     }
+
+    public enum GamePhase
+    {
+        MafiaAcquaintancePhase,
+        MafiaPhase,
+        SheriffPhase,
+        DoctorPhase,
+        IndividualDiscussionPhase,
+        GeneralDiscussionPhase,
+        VotingPhase
+
+    }
+
     public enum GameState
 {
     Initial,

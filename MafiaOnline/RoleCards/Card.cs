@@ -9,5 +9,6 @@ namespace MafiaOnline.RoleCards
     internal class Card
     {
         public string? asset;
+        public int RoleNumber;
     }
 }
