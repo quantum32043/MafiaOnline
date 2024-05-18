@@ -12,7 +12,10 @@
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <AbsoluteLayout>
+    <AbsoluteLayout x:Name="PageView">
+        <Label x:Name="PhaseLabel"
+               Margin="160, 35, 20, 0"
+               FontSize="16"/>
         <VerticalStackLayout x:Name="ViewLayout"
                              VerticalOptions="Fill" 
                              HorizontalOptions="Fill" 

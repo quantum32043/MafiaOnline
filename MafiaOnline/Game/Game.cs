@@ -1,5 +1,9 @@
 ﻿using MafiaOnline.RoleCards;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MafiaOnline
 {
@@ -11,7 +15,7 @@ namespace MafiaOnline
         [JsonProperty]
         public GameDayTime _currentDayTime { get; set; }
         [JsonProperty]
-        public GamePhase _currentGamePhase { get; set; }
+        public GamePhase? _currentGamePhase { get; set; }
         [JsonProperty]
         public bool GameOver { get; set; }
         [JsonProperty]
@@ -20,6 +24,11 @@ namespace MafiaOnline
         public int _mafiaCount { get; set; }
         [JsonProperty]
         public int _peacefulCount { get; set; }
+
+        public event EventHandler PhaseChanged;
+        public event EventHandler RoleActionRequired;
+
+        private TaskCompletionSource<bool> _actionCompletionSource;
 
         public Game()
         {
@@ -48,18 +57,8 @@ namespace MafiaOnline
             _cards.Add(new Doctor());
             _cards.Add(new Sheriff());
 
-            while (!IsGameOver())
-            {
-                switch (_currentDayTime)
-                {
-                    case GameDayTime.Day:
-                        DayPhase();
-                        break;
-                    case GameDayTime.Night:
-                        NightPhase();
-                        break;
-                }
-            }
+            AssignRoles();
+            RunGameLoop();
         }
 
         public void AssignRoles()
@@ -73,83 +72,105 @@ namespace MafiaOnline
             }
         }
 
-        private void DayPhase()
+        private async void RunGameLoop()
         {
+            while (!IsGameOver())
+            {
+                switch (_currentDayTime)
+                {
+                    case GameDayTime.Day:
+                        await RunDayPhase();
+                        break;
+                    case GameDayTime.Night:
+                        await RunNightPhase();
+                        break;
+                }
+            }
+        }
+
+        private async Task RunDayPhase()
+        {
+            await GeneralDiscussion();
+            await IndividualDiscussion();
             if (_dayNumber != 1)
             {
-                GeneralDiscussion();
-                IndividualDiscussion();
-                Voting();
-
-            }
-            else
-            {
-                //Таймер на 10 секунд для ознакомления с картами
+                await Voting();
             }
             TransitionToPhase(GameDayTime.Night);
         }
 
-        private void NightPhase()
+        private async Task RunNightPhase()
         {
-            if (_dayNumber != 1)
-            {
-                MafiaRoleplaying();
-                SheriffRoleplaying();
-                DoctorRoleplying();
-            }
-            else
-            {
-                MafiaAcquaintance();
-            }
+            await MafiaRoleplaying();
+            await SheriffRoleplaying();
+            await DoctorRoleplaying();
             TransitionToPhase(GameDayTime.Day);
         }
 
-        private void IndividualDiscussion()
+        private async Task GeneralDiscussion()
         {
-            _currentGamePhase = GamePhase.IndividualDiscussionPhase;
-            foreach (var player in players)
-            {
-
-            }
-        }
-
-        private void GeneralDiscussion()
-        {
+            Console.WriteLine("Фаза общей дискуссии");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.GeneralDiscussionPhase;
-
+            OnPhaseChanged();
+            await _actionCompletionSource.Task;
         }
 
-        private void Voting()
+        private async Task IndividualDiscussion()
         {
+            Console.WriteLine("Фаза индивидуальной дискуссии");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
+            _currentGamePhase = GamePhase.IndividualDiscussionPhase;
+            OnPhaseChanged();
+            await _actionCompletionSource.Task;
+        }
+
+        private async Task Voting()
+        {
+            Console.WriteLine("Фаза голосования");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.VotingPhase;
-
+            OnPhaseChanged();
+            await _actionCompletionSource.Task;
         }
 
-        private void MafiaAcquaintance()
+        private async Task MafiaRoleplaying()
         {
-            _currentGamePhase = GamePhase.MafiaAcquaintancePhase;
-        }
-
-
-        private void MafiaRoleplaying()
-        {
+            Console.WriteLine("Фаза мафии");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.MafiaPhase;
+            OnPhaseChanged();
+            OnRoleActionRequired();
+            await _actionCompletionSource.Task; // Ожидание завершения действия мафии
         }
 
-        private void SheriffRoleplaying()
+        private async Task SheriffRoleplaying()
         {
-            _currentGamePhase= GamePhase.SheriffPhase;
+            Console.WriteLine("Фаза шерифа");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
+            _currentGamePhase = GamePhase.SheriffPhase;
+            OnPhaseChanged();
+            OnRoleActionRequired();
+            await _actionCompletionSource.Task; // Ожидание завершения действия шерифа
         }
 
-        private void DoctorRoleplying()
+        private async Task DoctorRoleplaying()
         {
+            Console.WriteLine("Фаза доктора");
+            _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.DoctorPhase;
+            //OnPhaseChanged();
+            OnRoleActionRequired();
+            await _actionCompletionSource.Task; // Ожидание завершения действия доктора
         }
 
+        public void CompleteAction()
+        {
+            _actionCompletionSource?.TrySetResult(true);
+        }
 
         private void TransitionToPhase(GameDayTime nextPhase)
         {
-            // Переход между фазами
             _currentDayTime = nextPhase;
         }
 
@@ -157,13 +178,23 @@ namespace MafiaOnline
         {
             if (_mafiaCount > _peacefulCount)
             {
-                GameOver = false;
+                GameOver = true;
             }
             else
             {
-                GameOver = true;
+                GameOver = false;
             }
             return GameOver;
+        }
+
+        protected virtual void OnPhaseChanged()
+        {
+            PhaseChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnRoleActionRequired()
+        {
+            RoleActionRequired?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -175,21 +206,18 @@ namespace MafiaOnline
 
     public enum GamePhase
     {
-        MafiaAcquaintancePhase,
         MafiaPhase,
         SheriffPhase,
         DoctorPhase,
         IndividualDiscussionPhase,
         GeneralDiscussionPhase,
         VotingPhase
-
     }
 
     public enum GameState
-{
-    Initial,
-    InProgress,
-    Completed
+    {
+        Initial,
+        InProgress,
+        Completed
+    }
 }
-}
-
