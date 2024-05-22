@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MafiaOnline.Network
 {
@@ -15,6 +16,7 @@ namespace MafiaOnline.Network
         public bool ClientsWaiting;
 
         private readonly TcpListener _listener;
+        private JsonSerializerSettings _serializerSettings;
 
         public Dictionary<Player, TcpClient>? connections;
 
@@ -26,6 +28,12 @@ namespace MafiaOnline.Network
             Port = port;
             _listener = new TcpListener(this.IP, this.Port);
             connections = new Dictionary<Player, TcpClient>();
+            _serializerSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Objects,
+            };
         }
         public void Start()
         {
@@ -61,7 +69,7 @@ namespace MafiaOnline.Network
                             {
                                 NetworkStream stream = client.GetStream();
                                 {
-                                    string json = JsonConvert.SerializeObject(new { type = "playerList", players = currentPlayers });
+                                    string json = JsonConvert.SerializeObject(new { type = "playerList", players = currentPlayers }, _serializerSettings);
                                     byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
                                     await stream.WriteAsync(jsonBytes);
@@ -71,7 +79,7 @@ namespace MafiaOnline.Network
                     }
                     await Task.Delay(2000);
                 }
-                catch (Exception ex) { Console.WriteLine(ex.Message); }
+                catch (Exception ex) {Console.WriteLine("SendPlayers: " + ex.Message); }
             }
         }
 
@@ -88,7 +96,7 @@ namespace MafiaOnline.Network
                     {
                         NetworkStream stream = client.GetStream();
                         {
-                            string json = JsonConvert.SerializeObject(new { type = "startGame", id=i++ });
+                            string json = JsonConvert.SerializeObject(new { type = "startGame", id = i++ }, _serializerSettings);
                             byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
                             await stream.WriteAsync(jsonBytes);
@@ -96,30 +104,112 @@ namespace MafiaOnline.Network
                     }
                 }
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex) { Console.WriteLine("SendStartPackage: " + ex.Message); }
         }
 
-        public async void SendGameInfo(Game game) 
+        //Прослушивание клиентов
+        public void ForwardUpdateGamePackages()
+        {
+            List<TcpClient> currentConnections = connections!.Values.ToList();
+            foreach (var connection in currentConnections)
+            {
+                Thread clientThread = new Thread(() => HandleClient(connection));
+                clientThread.Start();
+            }
+        }
+
+        public void HandleClient(TcpClient client)
+        {
+            Game game = new();
+            NetworkStream stream = client.GetStream();
+            byte[] buffer = new byte[client.ReceiveBufferSize];
+            while (ServerOn)
+            {
+                int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                if (bytesRead > 0)
+                {
+                    string? json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    try
+                    {
+                        JObject data = JObject.Parse(json);
+                        Console.WriteLine(data.ToString());
+
+                        if (data["type"]?.ToString() == "gameInfo")
+                        {
+                            JToken infoToken = data["info"];
+                            if (infoToken != null)
+                            {
+                                game = infoToken.ToObject<Game>();
+                                Console.WriteLine("Received updated game info!");
+                                SendGameInfo(game);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при десериализации JSON: " + ex.Message);
+                        Console.WriteLine("JSON: " + json);
+                    }
+                }
+            }
+        }
+
+        //Отправка экземпляра игры всем клиентам
+        public async void SendGameInfo(Game game)
         {
             try
             {
-                List<TcpClient> currentConnections = connections!.Values.ToList();
-                Console.WriteLine(JsonConvert.SerializeObject(game));
+                if (connections == null)
+                {
+                    Console.WriteLine("Error: Connections dictionary is null.");
+                    return;
+                }
+
+                if (_serializerSettings == null)
+                {
+                    Console.WriteLine("Error: Serializer settings are null.");
+                    return;
+                }
+
+                List<TcpClient> currentConnections = connections.Values.ToList();
+                Console.WriteLine("Sending game info...");
+                Console.WriteLine($"Serializer settings initialized: {_serializerSettings != null}");
+
+                // Логирование JSON-структуры игры для отладки
+                try
+                {
+                    string testJson = JsonConvert.SerializeObject(new { type = "gameInfo", info = game }, _serializerSettings);
+                    Console.WriteLine("Game JSON preview:");
+                    Console.WriteLine(testJson);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error serializing game object: {ex.Message}");
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                    return;
+                }
+
                 foreach (TcpClient client in currentConnections)
                 {
-                    if (client.Connected)
+                    if (client != null && client.Connected)
                     {
-                        NetworkStream stream = client.GetStream();
+                        NetworkStream? stream = client.GetStream();
+                        if (stream != null)
                         {
-                            string json = JsonConvert.SerializeObject(new { type = "gameInfo", info = game });
+                            string json = JsonConvert.SerializeObject(new { type = "gameInfo", info = game }, _serializerSettings);
                             byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
-                            await stream.WriteAsync(jsonBytes);
+                            await stream.WriteAsync(jsonBytes, 0, jsonBytes.Length);
                         }
                     }
                 }
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+            }
         }
 
         //private void CheckConnections()
@@ -170,7 +260,7 @@ namespace MafiaOnline.Network
                     {
                         string? json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                        Player? player = JsonConvert.DeserializeObject<Player>(json);
+                        Player? player = JsonConvert.DeserializeObject<Player>(json, _serializerSettings);
 
 
                         if (!connections!.ContainsKey(player!))
@@ -183,7 +273,7 @@ namespace MafiaOnline.Network
                         Console.WriteLine(connections.ToString());
                     }
                 }
-                catch (Exception ex) { Console.WriteLine(ex.Message); }
+                catch (Exception ex) { Console.WriteLine("AcceptClients: " + ex.Message); }
             }
         }
     }

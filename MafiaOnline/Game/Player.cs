@@ -1,23 +1,22 @@
 ﻿using MafiaOnline.RoleCards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace MafiaOnline
 {
     internal class Player
     {
-        public Card? card; 
-        public string Name { get; set; }
-        public int votesNumber;
-        public int id;
+        public Card? card { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public int votesNumber { get; set; }
+
+        public int id { get; set; }
+
         public bool IsAlive { get; set; }
-        public Player() 
-        { 
+
+        public Player()
+        {
             IsAlive = true;
         }
     }

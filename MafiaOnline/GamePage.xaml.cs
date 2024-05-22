@@ -1,7 +1,6 @@
 using MafiaOnline.Network;
 using MafiaOnline.RoleCards;
 using MafiaOnline.Services;
-using System.Timers;
 
 namespace MafiaOnline;
 
@@ -73,11 +72,13 @@ public partial class GamePage : ContentPage
             _hostService = Handler!.MauiContext!.Services.GetService<IHostService>()!;
             _host = _hostService.GetHost();
             _game.players = _host.connections.Keys.ToList();
+            _game.Initialize();
             _host.SendGameInfo(_game);
+            _host.ForwardUpdateGamePackages();
         }
         else
         {
-            _game = _client.ReceiveGameInfo();
+            _client.ReceiveGameInfo(ref _game);
         }
         // Подписка на события
         _game.PhaseChanged += OnPhaseChanged;
@@ -95,9 +96,9 @@ public partial class GamePage : ContentPage
         }
         foreach (var player in _game.players)
         {
-            Console.WriteLine(player.Name + " : " + player.card);
+            Console.WriteLine(player.Name + " : " + player.card.Asset);
         }
-        RoleCard.Source = _player.card.asset;
+        RoleCard.Source = _player.card.Asset;
         Console.WriteLine(_player);
         DisplayPlayers();
     }
@@ -158,9 +159,8 @@ public partial class GamePage : ContentPage
     {
         if (_selectedLabel != null)
         {
-            // Получаем информацию из выделенного Label
-            Console.WriteLine(_selectedLabel.AutomationId + " : " + _selectedLabel.Text);
-            // Теперь вы можете использовать playerName для дальнейших действий
+            _game.players = _player.card.RoleAction(_game.players, Int32.Parse(_selectedLabel.AutomationId));
+            RoleButton.IsEnabled = false;
         }
     }
 
@@ -264,6 +264,10 @@ public partial class GamePage : ContentPage
     {
         // Реализация действий мафии
         Console.WriteLine("Мафия выполняет действие.");
+        if (_player.card is Mafia) 
+        {
+            RoleButton.IsEnabled = true;
+        }
         // Здесь вы можете показать интерфейс для действия мафии
     }
 
@@ -271,6 +275,10 @@ public partial class GamePage : ContentPage
     {
         // Реализация действий шерифа
         Console.WriteLine("Шериф выполняет действие.");
+        if (_player.card is Sheriff)
+        {
+            RoleButton.IsEnabled = true;
+        }
         // Здесь вы можете показать интерфейс для действия шерифа
     }
 
@@ -278,13 +286,16 @@ public partial class GamePage : ContentPage
     {
         // Реализация действий доктора
         Console.WriteLine("Доктор выполняет действие.");
-        // Здесь вы можете показать интерфейс для действия доктора
+        if (_player.card is Mafia)
+        {
+            RoleButton.IsEnabled = true;
+        }
     }
 
     private async void StartTimer(int time)
     {
         _discussionTimeRemaining = time;
-        Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+        this.Dispatcher.StartTimer(TimeSpan.FromSeconds(1), () =>
         {
             if (_discussionTimeRemaining < 0)
             {

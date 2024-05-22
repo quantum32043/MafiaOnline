@@ -2,26 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MafiaOnline.RoleCards
 {
     internal class Mafia : Card
     {
+        public override string? Asset { get; set; }
+        public override int RoleNumber { get; set; }
         public Mafia()
         {
-            //if (Application.Current.RequestedTheme == AppTheme.Dark)
-            //{
-            //    asset = "dark_mafia.png";
-            //}
-            //else if (Application.Current.RequestedTheme == AppTheme.Light)
-            //{
-            //    asset = "mafia.png";
-            //}
-            asset = "mafia.png";
+            Asset = "mafia.png";
             RoleNumber = 1;
         }
 
-        public void Shot() { }
+        public override List<Player> RoleAction(List<Player> players, int playerId)
+        {
+            foreach (Player player in players)
+            {
+                if (player.id == playerId)
+                {
+                    player.IsAlive = false;
+                    Console.WriteLine(player.ToString() + " was killed");
+                    break;
+                }
+            }
+            return players;
+        }
     }
 }

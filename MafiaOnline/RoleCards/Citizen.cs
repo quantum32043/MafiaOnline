@@ -4,23 +4,23 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MafiaOnline.RoleCards
 {
     internal class Citizen : Card
     {
+        public override string? Asset {  get; set; }
+        public override int RoleNumber { get; set; }
         public Citizen()
         {
-            //if (Application.Current.RequestedTheme == AppTheme.Dark)
-            //{
-            //    asset = "dark_citizen.png";
-            //}
-            //else if (Application.Current.RequestedTheme == AppTheme.Light)
-            //{
-            //    asset = "citizen.png";
-            //}
-            asset = "citizen.png";
-            RoleNumber = -1;
+            Asset = "citizen.png";
+            RoleNumber = 2;
+        }
+
+        public override List<Player> RoleAction(List<Player> players, int playerId)
+        {
+            return players;
         }
     }
 }

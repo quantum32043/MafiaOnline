@@ -43,50 +43,30 @@
                    CornerRadius="10"
                    Padding="5, 0, 5, 0">
                 <VerticalStackLayout x:Name="PlayerList">
-                    <!--<Button BackgroundColor="Red"
-                            VerticalOptions="StartAndExpand"
-                            HorizontalOptions="FillAndExpand"
-                            ZIndex="0"
-                            HeightRequest="40"
-                            CornerRadius="10"
-                            Margin="0, 5, 0, 0"/>-->
-                    <!--<Frame HeightRequest="40"
-                           Margin="0, 5, 0, 0"
-                           Padding="0, 0, 0, 0"
-                           CornerRadius="10">
-                        <Label x:Name="playerLabel1" 
-                               Text="Игрок 1"
-                               HorizontalTextAlignment="Center"
-                               VerticalTextAlignment="Center"
-                               FontSize="22"
-                               HeightRequest="40">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnLabelTapped"/>
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </Frame>-->
+
                 </VerticalStackLayout>
             </Frame>
         </ScrollView>
 
         <Button x:Name="VoteButton"
-                        Clicked="OnButtonClicked"
-                        Margin="5, 640, 5, 0"
-                        WidthRequest="383"
-                        Style="{DynamicResource MenuButtonStyle}"
-                        ZIndex="0"
-                        Text="Vote"
-                        BackgroundColor="{DynamicResource SecondaryColor}"
-                        TextColor="{DynamicResource SecondaryTextColor}"/>
+                Clicked="OnButtonClicked"
+                Margin="5, 640, 5, 0"
+                WidthRequest="383"
+                Style="{DynamicResource MenuButtonStyle}"
+                ZIndex="0"
+                Text="Vote"
+                BackgroundColor="{DynamicResource SecondaryColor}"
+                TextColor="{DynamicResource SecondaryTextColor}"/>
         
         <Button x:Name="RoleButton"
-                        Clicked="OnButtonClicked"
-                        Margin="5, 715, 5, 0"
-                        WidthRequest="383"
-                        Style="{DynamicResource MenuButtonStyle}"
-                        ZIndex="0"
-                        Text="RoleAction"
-                        BackgroundColor="{DynamicResource SecondaryColor}"
-                        TextColor="{DynamicResource SecondaryTextColor}"/>
+                IsEnabled="False"
+                Clicked="OnButtonClicked"
+                Margin="5, 715, 5, 0"
+                WidthRequest="383"
+                Style="{DynamicResource MenuButtonStyle}"
+                ZIndex="0"
+                Text="RoleAction"
+                BackgroundColor="{DynamicResource SecondaryColor}"
+                TextColor="{DynamicResource SecondaryTextColor}"/>
     </AbsoluteLayout>
 </ContentPage>

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MafiaOnline.Network
 {
@@ -16,10 +17,17 @@ namespace MafiaOnline.Network
         private IPAddress? _serverIP;
         public bool waitingServer;
         public int id;
+        private JsonSerializerSettings _serializerSettings;
+        private JsonSerializer _serializer;
 
         public Client()
         {
-            //tcpClient = new TcpClient();
+            _serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            _serializer = JsonSerializer.Create(_serializerSettings);
         }
 
         public async Task Join(Player player)
@@ -77,18 +85,24 @@ namespace MafiaOnline.Network
 
                         try
                         {
-                            dynamic data = JsonConvert.DeserializeObject(json);
+                            JObject data = JObject.Parse(json);
+
                             Console.WriteLine(data.ToString());
-                            if (data.type == "playerList")
+
+                            if (data["type"]?.ToString() == "playerList")
                             {
-                                players = JsonConvert.DeserializeObject<List<Player>>(data.players.ToString());
+                                // Извлекаем поле "players" и десериализуем его отдельно
+                                JToken playersToken = data["players"];
+                                if (playersToken != null)
+                                {
+                                    players = playersToken.ToObject<List<Player>>();
+                                }
                             }
-                            else if (data.type == "startGame")
+                            else if (data["type"]?.ToString() == "startGame")
                             {
                                 waitingServer = false;
-                                id = data.id;
-                                Console.WriteLine($"Geted startGame package with Player id = {id}!");
-
+                                id = data["id"]?.ToObject<int>() ?? 0;
+                                Console.WriteLine($"Received startGame package with Player id = {id}!");
                             }
                         }
                         catch (Exception ex)
@@ -105,9 +119,10 @@ namespace MafiaOnline.Network
             return players;
         }
 
-        public Game ReceiveGameInfo()
+        //Получение обновленных игровых данных
+        public void ReceiveGameInfo(ref Game game)
         {
-            Game game = new();
+
             try
             {
                 NetworkStream stream = tcpClient.GetStream();
@@ -119,13 +134,17 @@ namespace MafiaOnline.Network
 
                     try
                     {
-                        dynamic data = JsonConvert.DeserializeObject(json);
+                        JObject data = JObject.Parse(json);
                         Console.WriteLine(data.ToString());
-                        if (data.type == "gameInfo")
+
+                        if (data["type"]?.ToString() == "gameInfo")
                         {
-                            string gameJson = JsonConvert.SerializeObject(data.info);
-                            game = JsonConvert.DeserializeObject<Game>(gameJson);
-                            Console.WriteLine("Geted game info!");
+                            JToken infoToken = data["info"];
+                            if (infoToken != null)
+                            {
+                                game = infoToken.ToObject<Game>();
+                                Console.WriteLine("Received game info!");
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -136,7 +155,18 @@ namespace MafiaOnline.Network
                 }
             }
             catch (Exception ex) { Console.WriteLine("2: " + ex.Message); }
-            return game;
+        }
+
+        //Отправка клиентом своего обновленного экземпляра игры на хост
+        public async void SendUpdatedGameInfo(Game game)
+        {
+            NetworkStream stream = tcpClient.GetStream();
+            {
+                string json = JsonConvert.SerializeObject(new { type = "gameInfo", info = game }, _serializerSettings);
+                byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+
+                await stream.WriteAsync(jsonBytes);
+            }
         }
     }
 

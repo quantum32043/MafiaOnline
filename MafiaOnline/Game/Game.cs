@@ -9,40 +9,41 @@ namespace MafiaOnline
 {
     internal class Game
     {
-        public List<Player> players { get; set; }
         [JsonProperty]
-        public List<Card> _cards { get; set; }
+        public List<Player> players { get; set; } = new List<Player>();
         [JsonProperty]
-        public GameDayTime _currentDayTime { get; set; }
+        public List<Card> _cards { get; set; } = new List<Card>();
+        [JsonProperty]
+        public GameDayTime _currentDayTime { get; set; } = GameDayTime.Day;
         [JsonProperty]
         public GamePhase? _currentGamePhase { get; set; }
         [JsonProperty]
         public bool GameOver { get; set; }
         [JsonProperty]
-        public int _dayNumber { get; set; }
+        public int _dayNumber { get; set; } = 1;
         [JsonProperty]
         public int _mafiaCount { get; set; }
         [JsonProperty]
         public int _peacefulCount { get; set; }
 
-        public event EventHandler PhaseChanged;
-        public event EventHandler RoleActionRequired;
+        public event EventHandler? PhaseChanged;
+        public event EventHandler? RoleActionRequired;
 
-        private TaskCompletionSource<bool> _actionCompletionSource;
+        private TaskCompletionSource<bool>? _actionCompletionSource;
 
         public Game()
         {
-            _cards = new List<Card>();
-            _currentDayTime = GameDayTime.Day; // Игра начинается с дневной фазы
-            _dayNumber = 1;
             GameOver = false;
         }
 
-        public void Start()
+        public void Initialize()
         {
+            if (players == null) throw new ArgumentNullException(nameof(players));
+
             _mafiaCount = (int)Math.Round(players.Count / 3.5);
             _peacefulCount = players.Count - _mafiaCount;
             int citizenCount = players.Count - _mafiaCount - 2;
+            _currentGamePhase = GamePhase.GeneralDiscussionPhase;
 
             for (int i = 0; i < _mafiaCount; i++)
             {
@@ -58,6 +59,11 @@ namespace MafiaOnline
             _cards.Add(new Sheriff());
 
             AssignRoles();
+
+        }
+
+        public void Start()
+        {
             RunGameLoop();
         }
 

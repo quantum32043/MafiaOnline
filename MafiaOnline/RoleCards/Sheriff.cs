@@ -3,25 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MafiaOnline.RoleCards
 {
     internal class Sheriff : Card
     {
+        public override string? Asset { get; set; }
+        public override int RoleNumber { get; set; }
         public Sheriff()
         {
-            //if (Application.Current.RequestedTheme == AppTheme.Dark)
-            //{
-            //    asset = "dark_sheriff.png";
-            //}
-            //else if (Application.Current.RequestedTheme == AppTheme.Light)
-            //{
-            //    asset = "sheriff.png";
-            //}
-            asset = "sheriff.png";
-            RoleNumber = 2;
+            Asset = "sheriff.png";
+            RoleNumber = 4;
         }
 
-        public void Check() { }
+        public override List<Player> RoleAction(List<Player> players, int playerId)
+        {
+            foreach (Player player in players)
+            {
+                if (player.id == playerId)
+                {
+                    player.IsAlive = false;
+                    break;
+                }
+            }
+            return players;
+        }
     }
 }
