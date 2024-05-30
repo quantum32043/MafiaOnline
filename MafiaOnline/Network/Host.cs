@@ -32,9 +32,16 @@ namespace MafiaOnline.Network
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                 Formatting = Formatting.Indented,
-                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameHandling = TypeNameHandling.Auto,
             };
         }
+
+        public class ObjectWrapper()
+        {
+            public string Type { get; set; }
+            public Game Info { get; set; }
+        }
+
         public void Start()
         {
             _listener.Start();
@@ -132,19 +139,10 @@ namespace MafiaOnline.Network
 
                     try
                     {
-                        JObject data = JObject.Parse(json);
-                        Console.WriteLine(data.ToString());
-
-                        if (data["type"]?.ToString() == "gameInfo")
-                        {
-                            JToken infoToken = data["info"];
-                            if (infoToken != null)
-                            {
-                                game = infoToken.ToObject<Game>();
-                                Console.WriteLine("Received updated game info!");
-                                SendGameInfo(game);
-                            }
-                        }
+                        var deserializedGameWrapper = JsonConvert.DeserializeObject<ObjectWrapper>(json, _serializerSettings);
+                        game = deserializedGameWrapper.Info;
+                        Console.WriteLine("Received updated game info!");
+                        SendGameInfo(game);
                     }
                     catch (Exception ex)
                     {
@@ -160,35 +158,23 @@ namespace MafiaOnline.Network
         {
             try
             {
-                if (connections == null)
-                {
-                    Console.WriteLine("Error: Connections dictionary is null.");
-                    return;
-                }
-
-                if (_serializerSettings == null)
-                {
-                    Console.WriteLine("Error: Serializer settings are null.");
-                    return;
-                }
-
                 List<TcpClient> currentConnections = connections.Values.ToList();
                 Console.WriteLine("Sending game info...");
-                Console.WriteLine($"Serializer settings initialized: {_serializerSettings != null}");
 
                 // Логирование JSON-структуры игры для отладки
-                try
-                {
-                    string testJson = JsonConvert.SerializeObject(new { type = "gameInfo", info = game }, _serializerSettings);
-                    Console.WriteLine("Game JSON preview:");
-                    Console.WriteLine(testJson);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error serializing game object: {ex.Message}");
-                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                    return;
-                }
+                //try
+                //{
+                //    ObjectWrapper wrapper = new ObjectWrapper { Type = "gameInfo", Info = game };
+                //    string testJson = JsonConvert.SerializeObject(wrapper, _serializerSettings);
+                //    Console.WriteLine("Game JSON preview:");
+                //    Console.WriteLine(testJson);
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine($"Error serializing game object: {ex.Message}");
+                //    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                //    return;
+                //}
 
                 foreach (TcpClient client in currentConnections)
                 {
@@ -197,7 +183,8 @@ namespace MafiaOnline.Network
                         NetworkStream? stream = client.GetStream();
                         if (stream != null)
                         {
-                            string json = JsonConvert.SerializeObject(new { type = "gameInfo", info = game }, _serializerSettings);
+                            ObjectWrapper wrapper = new ObjectWrapper { Type = "gameInfo", Info = game };
+                            string json = JsonConvert.SerializeObject(wrapper, _serializerSettings);
                             byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
                             await stream.WriteAsync(jsonBytes, 0, jsonBytes.Length);

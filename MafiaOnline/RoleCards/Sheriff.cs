@@ -19,14 +19,7 @@ namespace MafiaOnline.RoleCards
 
         public override List<Player> RoleAction(List<Player> players, int playerId)
         {
-            foreach (Player player in players)
-            {
-                if (player.id == playerId)
-                {
-                    player.IsAlive = false;
-                    break;
-                }
-            }
+            
             return players;
         }
     }

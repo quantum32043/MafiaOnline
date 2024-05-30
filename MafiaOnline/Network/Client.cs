@@ -19,6 +19,8 @@ namespace MafiaOnline.Network
         public int id;
         private JsonSerializerSettings _serializerSettings;
         private JsonSerializer _serializer;
+        public event Action<Game> GameReceived;
+        public event EventHandler? PhaseChanged;
 
         public Client()
         {
@@ -28,6 +30,12 @@ namespace MafiaOnline.Network
                 Formatting = Formatting.Indented
             };
             _serializer = JsonSerializer.Create(_serializerSettings);
+        }
+
+        public class ObjectWrapper()
+        {
+            public string Type { get; set; }
+            public Game Info { get; set; }
         }
 
         public async Task Join(Player player)
@@ -120,41 +128,45 @@ namespace MafiaOnline.Network
         }
 
         //Получение обновленных игровых данных
-        public void ReceiveGameInfo(ref Game game)
+        public async Task ReceiveGameInfo()
         {
-
-            try
+            while (true)
             {
-                NetworkStream stream = tcpClient.GetStream();
-                byte[] buffer = new byte[tcpClient.ReceiveBufferSize];
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
+                try
                 {
-                    string? json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                    try
+                    NetworkStream stream = tcpClient.GetStream();
+                    byte[] buffer = new byte[tcpClient.ReceiveBufferSize];
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead > 0)
                     {
-                        JObject data = JObject.Parse(json);
-                        Console.WriteLine(data.ToString());
+                        string? json = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                        if (data["type"]?.ToString() == "gameInfo")
+                        try
                         {
-                            JToken infoToken = data["info"];
-                            if (infoToken != null)
-                            {
-                                game = infoToken.ToObject<Game>();
-                                Console.WriteLine("Received game info!");
-                            }
+                            var deserializedGameWrapper = JsonConvert.DeserializeObject<ObjectWrapper>(json, _serializerSettings);
+                            OnGameReceived(deserializedGameWrapper.Info); // передаем новую игру
+                            OnPhaseChanged();
+                            Console.WriteLine(deserializedGameWrapper.Info.GetType());
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Ошибка при десериализации JSON: " + ex.Message);
+                            Console.WriteLine("JSON: " + json);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Ошибка при десериализации JSON: " + ex.Message);
-                        Console.WriteLine("JSON: " + json);
-                    }
                 }
+                catch (Exception ex) { Console.WriteLine("2: " + ex.Message); }
             }
-            catch (Exception ex) { Console.WriteLine("2: " + ex.Message); }
+        }
+
+        private void OnGameReceived(Game game)
+        {
+            GameReceived?.Invoke(game);
+        }
+
+        protected virtual void OnPhaseChanged()
+        {
+            PhaseChanged?.Invoke(this, EventArgs.Empty);
         }
 
         //Отправка клиентом своего обновленного экземпляра игры на хост

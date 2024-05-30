@@ -49,7 +49,7 @@
         </ScrollView>
 
         <Button x:Name="VoteButton"
-                Clicked="OnButtonClicked"
+                Clicked="Test"
                 Margin="5, 640, 5, 0"
                 WidthRequest="383"
                 Style="{DynamicResource MenuButtonStyle}"

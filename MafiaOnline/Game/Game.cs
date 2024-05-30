@@ -16,7 +16,7 @@ namespace MafiaOnline
         [JsonProperty]
         public GameDayTime _currentDayTime { get; set; } = GameDayTime.Day;
         [JsonProperty]
-        public GamePhase? _currentGamePhase { get; set; }
+        public GamePhase _currentGamePhase { get; set; }
         [JsonProperty]
         public bool GameOver { get; set; }
         [JsonProperty]
@@ -28,6 +28,7 @@ namespace MafiaOnline
 
         public event EventHandler? PhaseChanged;
         public event EventHandler? RoleActionRequired;
+        public event EventHandler? UpdatePlayers;
 
         private TaskCompletionSource<bool>? _actionCompletionSource;
 
@@ -110,6 +111,7 @@ namespace MafiaOnline
             await MafiaRoleplaying();
             await SheriffRoleplaying();
             await DoctorRoleplaying();
+            OnUpdatePlayers();
             TransitionToPhase(GameDayTime.Day);
         }
 
@@ -146,7 +148,7 @@ namespace MafiaOnline
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.MafiaPhase;
             OnPhaseChanged();
-            OnRoleActionRequired();
+            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия мафии
         }
 
@@ -156,7 +158,7 @@ namespace MafiaOnline
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.SheriffPhase;
             OnPhaseChanged();
-            OnRoleActionRequired();
+            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия шерифа
         }
 
@@ -165,8 +167,8 @@ namespace MafiaOnline
             Console.WriteLine("Фаза доктора");
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.DoctorPhase;
-            //OnPhaseChanged();
-            OnRoleActionRequired();
+            OnPhaseChanged();
+            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия доктора
         }
 
@@ -201,6 +203,11 @@ namespace MafiaOnline
         protected virtual void OnRoleActionRequired()
         {
             RoleActionRequired?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnUpdatePlayers()
+        {
+            UpdatePlayers?.Invoke(this, EventArgs.Empty);
         }
     }
 
