@@ -223,11 +223,6 @@ namespace MafiaOnline
             PhaseChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void OnRoleActionRequired()
-        {
-            RoleActionRequired?.Invoke(this, EventArgs.Empty);
-        }
-
         protected virtual void OnUpdatePlayers()
         {
             UpdatePlayers?.Invoke(this, EventArgs.Empty);

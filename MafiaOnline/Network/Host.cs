@@ -161,21 +161,6 @@ namespace MafiaOnline.Network
                 List<TcpClient> currentConnections = connections.Values.ToList();
                 Console.WriteLine("Sending game info...");
 
-                // Логирование JSON-структуры игры для отладки
-                //try
-                //{
-                //    ObjectWrapper wrapper = new ObjectWrapper { Type = "gameInfo", Info = game };
-                //    string testJson = JsonConvert.SerializeObject(wrapper, _serializerSettings);
-                //    Console.WriteLine("Game JSON preview:");
-                //    Console.WriteLine(testJson);
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine($"Error serializing game object: {ex.Message}");
-                //    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                //    return;
-                //}
-
                 foreach (TcpClient client in currentConnections)
                 {
                     if (client != null && client.Connected)
@@ -198,10 +183,6 @@ namespace MafiaOnline.Network
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
             }
         }
-
-        //private void CheckConnections()
-        //{
-        //}
 
         private async void Broadcasting()
         {

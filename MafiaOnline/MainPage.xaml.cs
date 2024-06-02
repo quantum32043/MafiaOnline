@@ -23,7 +23,6 @@ namespace MafiaOnline
         {
             Button pressedButton = (Button)sender!;
             await Navigation.PushModalAsync(new LoginPage(pressedButton.Text));
-            //await Navigation.PushModalAsync(new GamePage());
         }
     }
 

@@ -15,7 +15,6 @@ public partial class GamePage : ContentPage
     private Client _client;
     private Player _player;
     private Label _selectedLabel;
-    private System.Timers.Timer _discussionTimer;
     private int _discussionTimeRemaining;
     private Label _timerLabel;
     private Dictionary<GamePhase, string> _gamePhaseMap { get; set; }
@@ -89,16 +88,13 @@ public partial class GamePage : ContentPage
             _host.ForwardUpdateGamePackages();
             await Task.Delay(550);
         }
-        // Подпишитесь на событие получения игры
+
         _client.GameReceived += UpdateGame;
         _client.ActionCompleted += CompleteAction;
-        // Запускаем ReceiveGameInfo в отдельном потоке
         _ = Task.Run(async () => await _client.ReceiveGameInfo());
         await Task.Delay(500);
-        // Подписка на события
         _game.PhaseChanged += OnPhaseChanged;
         _game.UpdatePlayers += UpdatePlayers;
-        //_game.RoleActionRequired += OnRoleActionRequired;
         _game.Start();
 
         _player = _clientService.GetPlayer();
@@ -147,7 +143,7 @@ public partial class GamePage : ContentPage
                 AutomationId = player.id.ToString()
             };
             content.SetDynamicResource(Label.TextColorProperty, "TextColor");
-            if (player != _player)
+            if (player.id != _player.id)
             {
                 var frame = new Frame
                 {
@@ -180,7 +176,7 @@ public partial class GamePage : ContentPage
         PlayerList.Clear();
         foreach (var player in _game.players)
         {
-            if (player != _player)
+            if (player.id != _player.id)
             {
                 var content = new Label
                 {
@@ -317,6 +313,7 @@ public partial class GamePage : ContentPage
         }
         else
         {
+            await Task.Delay(5000);
             _game.CompleteAction();
         }
     }
@@ -334,6 +331,7 @@ public partial class GamePage : ContentPage
         }
         else
         {
+            await Task.Delay(5000);
             _game.CompleteAction();
         }
     }
@@ -350,6 +348,7 @@ public partial class GamePage : ContentPage
         }
         else
         {
+            await Task.Delay(5000);
             _game.CompleteAction();
         }
     }
