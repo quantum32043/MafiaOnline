@@ -4,7 +4,9 @@
     <Color x:Key="PageBackgroundColor">Black</Color>
     <Color x:Key="PrimaryColor">Red</Color>
     <Color x:Key="SecondaryColor">White</Color>
+    <Color x:Key="TextColor">White</Color>
     <Color x:Key="SecondaryTextColor">White</Color>
     <Color x:Key="MenuColor">DarkGray</Color>
     <Color x:Key="TransparentColor">Transparent</Color>
+    <x:String x:Key="Logo">dark_logo.png</x:String>
 </ResourceDictionary>

@@ -17,7 +17,7 @@
 
 
     <StackLayout  Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
-        <Image Source="{AppThemeBinding Dark=dark_logo.png, Light=light_logo.png}" Aspect="Fill"/>
+        <Image Source="{DynamicResource Logo}" Aspect="Fill"/>
         <VerticalStackLayout Margin="0, 100, 0, 0">
             <Button x:Name="CreateButton" 
                     BackgroundColor="{DynamicResource PrimaryColor}" 

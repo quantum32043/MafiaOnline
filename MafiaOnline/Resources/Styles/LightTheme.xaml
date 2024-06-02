@@ -4,7 +4,9 @@
     <Color x:Key="PageBackgroundColor">White</Color>
     <Color x:Key="PrimaryColor">Red</Color>
     <Color x:Key="SecondaryColor">Gray</Color>
+    <Color x:Key="TextColor">Gray</Color>
     <Color x:Key="SecondaryTextColor">White</Color>
     <Color x:Key="MenuColor">LightGray</Color>
     <Color x:Key="TransparentColor">Transparent</Color>
+    <x:String x:Key="Logo">light_logo.png</x:String>
 </ResourceDictionary>

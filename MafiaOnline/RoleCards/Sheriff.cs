@@ -19,7 +19,7 @@ namespace MafiaOnline.RoleCards
 
         public override List<Player> RoleAction(List<Player> players, int playerId)
         {
-            
+            Console.WriteLine("Sheriff");
             return players;
         }
     }

@@ -65,19 +65,7 @@ public partial class GamePage : ContentPage
             FontSize = 24
         };
         PageView.Children.Add(_timerLabel);
-    }
-
-    private void UpdateGame(Game newGame)
-    {
-        _game = newGame;
-        // Обновляем пользовательский интерфейс на главном потоке
-        Device.BeginInvokeOnMainThread(() =>
-        {
-            PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase];
-        });
-
-        // Здесь обновите пользовательский интерфейс или выполните другие действия
-        Console.WriteLine("Получена новая игра");
+        _timerLabel.SetDynamicResource(Label.TextColorProperty, "TextColor");
     }
 
     protected override async void OnAppearing()
@@ -103,7 +91,7 @@ public partial class GamePage : ContentPage
         }
         // Подпишитесь на событие получения игры
         _client.GameReceived += UpdateGame;
-        _client.PhaseChanged += OnPhaseChanged;
+        _client.ActionCompleted += CompleteAction;
         // Запускаем ReceiveGameInfo в отдельном потоке
         _ = Task.Run(async () => await _client.ReceiveGameInfo());
         await Task.Delay(500);
@@ -131,11 +119,34 @@ public partial class GamePage : ContentPage
         DisplayPlayers();
     }
 
+    private void UpdateGame(Game newGame)
+    {
+        _game.UpdateState(newGame);
+        // Обновляем пользовательский интерфейс на главном потоке
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase];
+        });
+
+        // Здесь обновите пользовательский интерфейс или выполните другие действия
+        Console.WriteLine("Получена новая игра");
+    }
+
 
     private void DisplayPlayers()
     {
         foreach (var player in _game.players)
         {
+            var content = new Label
+            {
+                Text = player.Name,
+                HorizontalTextAlignment = TextAlignment.Center,
+                VerticalTextAlignment = TextAlignment.Center,
+                FontSize = 22,
+                HeightRequest = 40,
+                AutomationId = player.id.ToString()
+            };
+            content.SetDynamicResource(Label.TextColorProperty, "TextColor");
             if (player != _player)
             {
                 var frame = new Frame
@@ -144,15 +155,7 @@ public partial class GamePage : ContentPage
                     Margin = new Thickness(0, 5, 0, 0),
                     Padding = new Thickness(0),
                     CornerRadius = 10,
-                    Content = new Label
-                    {
-                        Text = player.Name,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        VerticalTextAlignment = TextAlignment.Center,
-                        FontSize = 22,
-                        HeightRequest = 40,
-                        AutomationId = player.id.ToString()
-                    }
+                    Content = content
                 };
 
                 // Добавление TapGestureRecognizer к Label
@@ -166,27 +169,36 @@ public partial class GamePage : ContentPage
         }
     }
 
+    private void CompleteAction(object sender, EventArgs e)
+    {
+        Console.WriteLine("Завершение хода");
+        _game.CompleteAction();
+    }
+
     private void UpdatePlayers(object sender, EventArgs e)
     {
+        PlayerList.Clear();
         foreach (var player in _game.players)
         {
             if (player != _player)
             {
+                var content = new Label
+                {
+                    Text = player.Name,
+                    HorizontalTextAlignment = TextAlignment.Center,
+                    VerticalTextAlignment = TextAlignment.Center,
+                    FontSize = 22,
+                    HeightRequest = 40,
+                    AutomationId = player.id.ToString()
+                };
+                content.SetDynamicResource(Label.TextColorProperty, "TextColor");
                 var frame = new Frame
                 {
                     HeightRequest = 40,
                     Margin = new Thickness(0, 5, 0, 0),
                     Padding = new Thickness(0),
                     CornerRadius = 10,
-                    Content = new Label
-                    {
-                        Text = player.Name,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        VerticalTextAlignment = TextAlignment.Center,
-                        FontSize = 22,
-                        HeightRequest = 40,
-                        AutomationId = player.id.ToString()
-                    }
+                    Content = content
                 };
 
                 if (player.IsAlive)
@@ -232,7 +244,6 @@ public partial class GamePage : ContentPage
         {
             _game.players = _player.card.RoleAction(_game.players, Int32.Parse(_selectedLabel.AutomationId));
             RoleButton.IsEnabled = false;
-            _game.CompleteAction();
             _client.SendUpdatedGameInfo(_game);
         }
     }
@@ -242,29 +253,8 @@ public partial class GamePage : ContentPage
         Console.WriteLine(_game._currentGamePhase.ToString());
         OnPhaseChanged(sender, e);
 
-        Console.WriteLine(_game._currentGamePhase.ToString());
+        //Console.WriteLine(_game._currentGamePhase.ToString());
     }
-
-    //private async void OnRoleAction(object sender, EventArgs e)
-    //{
-    //    Console.WriteLine("Action!!");
-    //    // Реализация действия роли
-    //    if (_player.card is Mafia)
-    //    {
-    //        // Действие для мафии
-    //    }
-    //    else if (_player.card is Doctor)
-    //    {
-    //        // Действие для доктора
-    //    }
-    //    else if (_player.card is Sheriff)
-    //    {
-    //        // Действие для шерифа
-    //    }
-
-    //    // Уведомляем игру о завершении действия роли
-    //    _game.CompleteAction();
-    //}
 
     private async void OnPhaseChanged(object sender, EventArgs e)
     {
@@ -272,51 +262,32 @@ public partial class GamePage : ContentPage
         switch (_game._currentGamePhase)
         {
             case GamePhase.GeneralDiscussionPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.GeneralDiscussionPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunGeneralDiscussion();
                 break;
             case GamePhase.IndividualDiscussionPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.IndividualDiscussionPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunIndividualDiscussion();
                 break;
             case GamePhase.VotingPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.VotingPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunVoting();
                 break;
             case GamePhase.MafiaPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.MafiaPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunMafiaRoleplaying();
                 break;
             case GamePhase.SheriffPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.SheriffPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunSheriffRoleplaying();
                 break;
             case GamePhase.DoctorPhase:
-                PhaseLabel.Text = _gamePhaseMap[GamePhase.DoctorPhase];
+                MainThread.BeginInvokeOnMainThread(() => { PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase]; });
                 await RunDoctorRoleplaying();
                 break;
         }
     }
 
-    //private void OnRoleActionRequired(object sender, EventArgs e) //работает некорректно
-    //{
-    //    // Здесь вы можете вызвать действия в зависимости от роли игрока
-    //    if (_player.card is Mafia)
-    //    {
-    //        // Показать интерфейс для действия мафии
-    //        Console.WriteLine("Мафия должна выполнить действие.");
-    //    }
-    //    else if (_player.card is Doctor)
-    //    {
-    //        // Показать интерфейс для действия доктора
-    //        Console.WriteLine("Доктор должен выполнить действие.");
-    //    }
-    //    else if (_player.card is Sheriff)
-    //    {
-    //        // Показать интерфейс для действия шерифа
-    //        Console.WriteLine("Шериф должен выполнить действие.");
-    //    }
-    //}
 
     private async Task RunGeneralDiscussion()
     {
@@ -326,14 +297,6 @@ public partial class GamePage : ContentPage
     private async Task RunIndividualDiscussion()
     {
         StartTimer(_game.players.Count * 5);
-        //int i = 0;
-        //while (_discussionTimeRemaining > 0) 
-        //{
-        //    if (_discussionTimeRemaining % 5 == 0)
-        //    {
-        //        PhaseLabel.Text = "Индивидуальная дискуссия\n" + _game.players[i++].Name;
-        //    }
-        //}
     }
 
     private async Task RunVoting()
@@ -345,31 +308,49 @@ public partial class GamePage : ContentPage
     {
         // Реализация действий мафии
         Console.WriteLine("Мафия выполняет действие.");
-        if (_player.card is Mafia)
+        if (_game.isRoleAlive(1))
         {
-            RoleButton.IsEnabled = true;
+            if (_player.card is Mafia)
+            {
+                RoleButton.IsEnabled = true;
+            }
         }
-        // Здесь вы можете показать интерфейс для действия мафии
+        else
+        {
+            _game.CompleteAction();
+        }
     }
 
     private async Task RunSheriffRoleplaying()
     {
         // Реализация действий шерифа
         Console.WriteLine("Шериф выполняет действие.");
-        if (_player.card is Sheriff)
+        if (_game.isRoleAlive(4))
         {
-            RoleButton.IsEnabled = true;
+            if (_player.card is Sheriff)
+            {
+                RoleButton.IsEnabled = true;
+            }
         }
-        // Здесь вы можете показать интерфейс для действия шерифа
+        else
+        {
+            _game.CompleteAction();
+        }
     }
 
     private async Task RunDoctorRoleplaying()
     {
         // Реализация действий доктора
-        Console.WriteLine("Доктор выполняет действие.");
-        if (_player.card is Mafia)
+        if (_game.isRoleAlive(3))
         {
-            RoleButton.IsEnabled = true;
+            if (_player.card is Doctor)
+            {
+                RoleButton.IsEnabled = true;
+            }
+        }
+        else
+        {
+            _game.CompleteAction();
         }
     }
 
@@ -383,7 +364,10 @@ public partial class GamePage : ContentPage
                 _game.CompleteAction();
                 return false; // Останавливаем таймер
             }
-            _timerLabel.Text = $"00:{_discussionTimeRemaining:00}";
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                _timerLabel.Text = $"00:{_discussionTimeRemaining:00}";
+            });
             _discussionTimeRemaining--;
             return true; // Продолжаем таймер
         });

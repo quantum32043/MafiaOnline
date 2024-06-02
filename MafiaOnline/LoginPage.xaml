@@ -18,10 +18,13 @@
             <Label Text="Login" 
                    FontSize="60"
                    VerticalOptions="StartAndExpand"
-                   HorizontalOptions="FillAndExpand"/>
+                   HorizontalOptions="FillAndExpand"
+                   TextColor="{DynamicResource TextColor}"/>
             <Entry x:Name="LoginEntry"
                    Placeholder="Enter your name"
-                   FontSize="20"/>
+                   FontSize="20"
+                   TextColor="{DynamicResource SecondaryColor}"
+                   PlaceholderColor="{DynamicResource TextColor}"/>
         </VerticalStackLayout>
         <Grid VerticalOptions="EndAndExpand" 
               HorizontalOptions="FillAndExpand"

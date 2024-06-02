@@ -14,16 +14,16 @@ namespace MafiaOnline
         protected override void OnStart()
         {
             // Проверьте, включена ли темная тема
-            //if (Application.Current.UserAppTheme == AppTheme.Dark)
-            //{
-            //    Application.Current.Resources = new DarkTheme();
-            //}
-            //else
-            //{
-            //    Application.Current.Resources = new LightTheme();
-            //}
+            if (Application.Current.UserAppTheme == AppTheme.Dark)
+            {
+                Application.Current.Resources = new DarkTheme();
+            }
+            else
+            {
+                Application.Current.Resources = new LightTheme();
+            }
             //Application.Current.Resources = new DarkTheme();
-            Application.Current.Resources = new LightTheme();
+            //Application.Current.Resources = new LightTheme();
         }
     }
 

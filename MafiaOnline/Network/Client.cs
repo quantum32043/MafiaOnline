@@ -20,7 +20,7 @@ namespace MafiaOnline.Network
         private JsonSerializerSettings _serializerSettings;
         private JsonSerializer _serializer;
         public event Action<Game> GameReceived;
-        public event EventHandler? PhaseChanged;
+        public event EventHandler? ActionCompleted;
 
         public Client()
         {
@@ -145,7 +145,7 @@ namespace MafiaOnline.Network
                         {
                             var deserializedGameWrapper = JsonConvert.DeserializeObject<ObjectWrapper>(json, _serializerSettings);
                             OnGameReceived(deserializedGameWrapper.Info); // передаем новую игру
-                            OnPhaseChanged();
+                            OnActionCompleted();
                             Console.WriteLine(deserializedGameWrapper.Info.GetType());
                         }
                         catch (Exception ex)
@@ -164,9 +164,9 @@ namespace MafiaOnline.Network
             GameReceived?.Invoke(game);
         }
 
-        protected virtual void OnPhaseChanged()
+        protected virtual void OnActionCompleted()
         {
-            PhaseChanged?.Invoke(this, EventArgs.Empty);
+            ActionCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         //Отправка клиентом своего обновленного экземпляра игры на хост

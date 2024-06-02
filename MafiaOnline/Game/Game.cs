@@ -79,6 +79,32 @@ namespace MafiaOnline
             }
         }
 
+        public void UpdateState(Game newGame)
+        {
+            if (newGame == null) throw new ArgumentNullException(nameof(newGame));
+
+            // Обновление всех свойств из нового экземпляра
+            this.players = newGame.players;
+            this._cards = newGame._cards;
+            this._currentDayTime = newGame._currentDayTime;
+            this._currentGamePhase = newGame._currentGamePhase;
+            this.GameOver = newGame.GameOver;
+            this._dayNumber = newGame._dayNumber;
+            this._mafiaCount = newGame._mafiaCount;
+            this._peacefulCount = newGame._peacefulCount;
+
+            // События и задачи остаются прежними
+        }
+
+        public bool isRoleAlive(int roleCardNumber)
+        {
+            foreach (var player in this.players) 
+            {
+                if (player.card.RoleNumber == roleCardNumber && player.IsAlive) return true;
+            }
+            return false;
+        }
+
         private async void RunGameLoop()
         {
             while (!IsGameOver())
@@ -148,7 +174,6 @@ namespace MafiaOnline
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.MafiaPhase;
             OnPhaseChanged();
-            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия мафии
         }
 
@@ -158,7 +183,6 @@ namespace MafiaOnline
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.SheriffPhase;
             OnPhaseChanged();
-            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия шерифа
         }
 
@@ -168,7 +192,6 @@ namespace MafiaOnline
             _actionCompletionSource = new TaskCompletionSource<bool>();
             _currentGamePhase = GamePhase.DoctorPhase;
             OnPhaseChanged();
-            //OnRoleActionRequired();
             await _actionCompletionSource.Task; // Ожидание завершения действия доктора
         }
 
@@ -209,6 +232,7 @@ namespace MafiaOnline
         {
             UpdatePlayers?.Invoke(this, EventArgs.Empty);
         }
+
     }
 
     public enum GameDayTime
