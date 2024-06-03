@@ -118,13 +118,11 @@ public partial class GamePage : ContentPage
     private void UpdateGame(Game newGame)
     {
         _game.UpdateState(newGame);
-        // Обновляем пользовательский интерфейс на главном потоке
         MainThread.BeginInvokeOnMainThread(() =>
         {
             PhaseLabel.Text = _gamePhaseMap[_game._currentGamePhase];
         });
 
-        // Здесь обновите пользовательский интерфейс или выполните другие действия
         Console.WriteLine("Получена новая игра");
     }
 
@@ -154,12 +152,9 @@ public partial class GamePage : ContentPage
                     Content = content
                 };
 
-                // Добавление TapGestureRecognizer к Label
                 var tapGestureRecognizer = new TapGestureRecognizer();
                 tapGestureRecognizer.Tapped += OnLabelTapped;
                 ((Label)frame.Content).GestureRecognizers.Add(tapGestureRecognizer);
-
-                // Добавление Frame на страницу
                 PlayerList.Add(frame);
             }
         }
@@ -199,7 +194,6 @@ public partial class GamePage : ContentPage
 
                 if (player.IsAlive)
                 {
-                    // Добавление TapGestureRecognizer к Label
                     var tapGestureRecognizer = new TapGestureRecognizer();
                     tapGestureRecognizer.Tapped += OnLabelTapped;
                     ((Label)frame.Content).GestureRecognizers.Add(tapGestureRecognizer);
@@ -210,8 +204,6 @@ public partial class GamePage : ContentPage
                     frame.Content.IsEnabled = false;
                     ((Label)frame.Content).Text += " (Dead)";
                 }
-
-                // Добавление Frame на страницу
                 PlayerList.Add(frame);
             }
         }
@@ -219,13 +211,11 @@ public partial class GamePage : ContentPage
 
     private void OnLabelTapped(object sender, EventArgs e)
     {
-        // Снимаем выделение с предыдущего Label
         if (_selectedLabel != null)
         {
             _selectedLabel.BackgroundColor = Colors.LightGray;
         }
 
-        // Выделяем новый Label
         _selectedLabel = sender as Label;
         if (_selectedLabel != null)
         {
@@ -238,18 +228,17 @@ public partial class GamePage : ContentPage
     {
         if (_selectedLabel != null)
         {
-            _game.players = _player.card.RoleAction(_game.players, Int32.Parse(_selectedLabel.AutomationId));
+            _game.nightPlayersState = _player.card.RoleAction(_game.nightPlayersState, Int32.Parse(_selectedLabel.AutomationId));
             RoleButton.IsEnabled = false;
             _client.SendUpdatedGameInfo(_game);
         }
+        _selectedLabel = null;
     }
 
     private void Test(object sender, EventArgs e)
     {
         Console.WriteLine(_game._currentGamePhase.ToString());
         OnPhaseChanged(sender, e);
-
-        //Console.WriteLine(_game._currentGamePhase.ToString());
     }
 
     private async void OnPhaseChanged(object sender, EventArgs e)

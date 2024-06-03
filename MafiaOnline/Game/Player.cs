@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace MafiaOnline
 {
-    internal class Player
+    internal class Player: ICloneable
     {
         public Card? card { get; set; }
 
@@ -18,6 +18,18 @@ namespace MafiaOnline
         public Player()
         {
             IsAlive = true;
+        }
+
+        public object Clone()
+        {
+            return new Player() 
+            {
+                card = this.card,
+                Name = this.Name,
+                votesNumber = this.votesNumber,
+                id = this.id,
+                IsAlive = this.IsAlive
+            };
         }
     }
 }

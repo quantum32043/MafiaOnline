@@ -12,6 +12,8 @@ namespace MafiaOnline
         [JsonProperty]
         public List<Player> players { get; set; } = new List<Player>();
         [JsonProperty]
+        public List<Player> nightPlayersState { get; set; } = new List<Player>();
+        [JsonProperty]
         public List<Card> _cards { get; set; } = new List<Card>();
         [JsonProperty]
         public GameDayTime _currentDayTime { get; set; } = GameDayTime.Day;
@@ -85,6 +87,7 @@ namespace MafiaOnline
 
             // Обновление всех свойств из нового экземпляра
             this.players = newGame.players;
+            this.nightPlayersState = newGame.nightPlayersState;
             this._cards = newGame._cards;
             this._currentDayTime = newGame._currentDayTime;
             this._currentGamePhase = newGame._currentGamePhase;
@@ -134,9 +137,19 @@ namespace MafiaOnline
 
         private async Task RunNightPhase()
         {
+            nightPlayersState.Clear();
+            foreach(var player in this.players) 
+            {
+                nightPlayersState.Add((Player)player.Clone());
+            }
             await MafiaRoleplaying();
             await SheriffRoleplaying();
             await DoctorRoleplaying();
+            players.Clear();
+            foreach (var player in nightPlayersState)
+            {
+                players.Add((Player)player.Clone());
+            }
             OnUpdatePlayers();
             TransitionToPhase(GameDayTime.Day);
         }
